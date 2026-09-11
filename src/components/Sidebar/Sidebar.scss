@@ -1,0 +1,82 @@
+@use '../../styles/abstract' as *;
+
+
+nav {
+  display: flex;
+  flex-basis: 15%;
+  background-color: $dark-one;
+  padding: 20px 0;
+  background-image: url('../../assets/images/background.png');
+  background-position: center;
+  position: relative;
+  box-sizing: border-box;
+
+
+  .filter {
+    top: 0;
+    background-color: $dark-one;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: absolute;
+    opacity: 0.6;
+  }
+
+  ul {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    z-index: 2;
+  }
+
+  a, label {
+    box-sizing: border-box;
+    padding: 2px 2px 2px 30px;
+    display: flex;
+    height: 63px;
+    color: $gray1;
+    align-items: center;
+    text-decoration: none;
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.850rem;
+    width: 100%;
+    cursor: pointer;
+
+    .circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-image: linear-gradient($primary-color, $secondary-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 10px;
+
+      svg {
+        color: $dark-one
+      }
+    ;
+
+    }
+  }
+
+  .active, li:hover {
+    animation: menu-active 0.5s normal;
+    background-color: $dark-three;
+
+  }
+}
+
+@keyframes menu-active {
+
+  from {
+    background-color: $dark-one;
+
+  }
+  to {
+    background-color: $dark-three;
+  }
+
+}

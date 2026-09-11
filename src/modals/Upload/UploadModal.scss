@@ -1,0 +1,55 @@
+.modal-upload {
+  .upload-header {
+  }
+
+  .upload-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .upload-cropper {
+      width: 100%;
+      height: 50vh;
+      display: flex;
+      position: relative;
+      margin-bottom: 10px;
+      border-radius: 3px;
+      background-color: rgb(214, 214, 214);
+      // background-image: url('../../../assets/img/no-image.png');
+      // background-position: center;
+      // background-repeat: no-repeat;
+      // background-size: cover;
+    }
+
+    .upload-button-group {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+
+      label {
+        outline: none !important;
+        transition-property: background-color, color, box-shadow;
+        transition-duration: 0.1s, 0.2s, 0.2s;
+        transition-timing-function: ease-in-out;
+        font-weight: 400;
+        font-family: inherit;
+        margin: 0;
+      }
+
+      .upload-button-group--load{
+        cursor: pointer;
+      }
+    }
+  }
+
+  .upload-footer {
+  }
+}

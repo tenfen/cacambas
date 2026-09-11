@@ -1,0 +1,62 @@
+@import '../../styles/abstract/_colors.scss';
+
+
+.input-standard {
+  border: none;
+  display: flex;
+  flex-direction: column;
+
+  label {
+    color: $secondary-color;
+    margin-bottom: 10px;
+    font-size: 0.750rem;
+  }
+
+  input {
+    background-color: $dark-one;
+    height: 40px;
+    border-radius: 5px;
+    padding-left: 10px;
+    color: $gray1;
+    font-size: 0.750rem;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid $secondary-color;
+
+    &:focus-visible {
+      border-color: $secondary-color;
+      box-shadow: none;
+      outline: none;
+    }
+
+    &:hover {
+      border-color: $secondary-color;
+    }
+
+    // Remove arrows from input Number
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    &[type=number] {
+      -moz-appearance: textfield;
+    }
+
+
+    &:-webkit-autofill,
+    &:-webkit-autofill:hover,
+    &:-webkit-autofill:focus,
+    &:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 30px $dark-one inset !important;
+      -webkit-text-fill-color: $gray1 !important;
+    }
+  }
+
+}
+
+.text {
+  // min-width: 300px;
+}

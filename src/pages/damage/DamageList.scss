@@ -1,0 +1,191 @@
+@import '../../styles/abstract/colors';
+
+.damage-list {
+  padding: 20px;
+
+  .damage-list--header {
+    display: flex;
+    justify-content: space-between;
+    color: #FFFFFF;
+    box-sizing: border-box;
+
+    h2 {
+      color: $gray1;
+      margin: 0;
+    }
+  }
+
+  .damage-list--body {
+    gap: 30px;
+    display: flex;
+    margin-top: 20px;
+    justify-content: space-between;
+    align-items: center;
+
+    .damage-list--body--left {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+
+      .damage-list--body--left--values {
+        gap: 10px;
+        width: 100%;
+        display: flex;
+        padding: 10px 0;
+
+        fieldset {
+          width: 30%;
+        }
+
+        .damage-search{
+          width: 50%;
+          margin-top: 18px;
+
+          input{
+            border-color: $green1;
+            font-size: 12px;
+          }
+
+          button{
+            min-width: 20px;
+            border-color: $green1;
+          }
+        }
+      }
+
+      .damage-list--body--left--damages {
+        width: 100%;
+        display: flex;
+        position: relative;
+
+        .damage-values {
+          width: 100%;
+          display: flex;
+          position: relative;
+          border-radius: 5px;
+          flex-direction: column;
+          height: calc(100vh - 300px);
+          border: 2px solid $secondary-color;
+          overflow: auto;
+
+          .damage-item {
+            width: 100%;
+            margin: 0;
+            font-size: 14px;
+            color: #FFFFFF;
+            padding: 10px 14px 10px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid $gray1;
+
+            span{
+              flex: 1;
+            }
+
+            svg {
+              color: $red1;
+            }
+          }
+
+          .damage-selected {
+            background-color: $secondary-color;
+            font-weight: bold;
+          }
+        }
+
+        .damage-add{
+          width: 10%;
+          right: 10px;
+          bottom: 10px;
+          font-size: 14px;
+          font-weight: 500;
+          display: flex;
+          position: absolute;
+          align-items: center;
+          justify-content: center;
+
+          svg {
+            font-size: 20px;
+            margin: 0;
+          }
+        }
+
+        .damage-refresh{
+          width: 10%;
+          right: 70px;
+          bottom: 10px;
+          font-size: 14px;
+          font-weight: 500;
+          display: flex;
+          position: absolute;
+          align-items: center;
+          justify-content: center;
+
+          svg {
+            font-size: 20px;
+            margin: 0;
+          }
+        }
+      }
+    }
+
+    .damage-list--body--right {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+
+      .damage-list--body--right--select {
+        gap: 10px;
+        width: 100%;
+        display: flex;
+        padding: 10px 0;
+
+        fieldset {
+          width: 90%;
+        }
+
+        .damage-list--body--right--btn-add-device{
+          width: 10%;
+          margin-top: 28px;
+          font-size: 14px;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          svg {
+            font-size: 20px;
+            margin: 0;
+          }
+        }
+      }
+
+
+
+      .damage-list--body--right--devices {
+        width: 100%;
+        display: flex;
+        border-radius: 5px;
+        flex-direction: column;
+        min-height: calc(100vh - 300px);
+        border: 2px solid $secondary-color;
+
+        label {
+          margin: 0;
+          font-size: 14px;
+          color: #FFFFFF;
+          padding: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          border-bottom: 1px solid $gray1;
+
+          svg {
+             color: $red1;
+          }
+        }
+      }
+    }
+  }
+}

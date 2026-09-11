@@ -1,0 +1,22 @@
+@use '../../styles/abstract' as *;
+
+.page-header {
+    display: flex;
+    flex-basis: 7%;
+    height: 7%;
+    background-color: $dark-one;
+    border-bottom: 1px solid $dark-two;
+    justify-content: center;
+    align-items: center;
+    padding: 7px;
+    box-sizing: border-box;
+
+    img {
+        height: 100%;
+        width: auto
+    }
+
+   
+
+
+}

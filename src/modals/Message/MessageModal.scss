@@ -1,0 +1,40 @@
+@import '../../styles/abstract/_colors.scss';
+
+.message-modal {
+  .modal-content {
+    background-color: #2b2b2b;
+    color: #FFFFFF;
+
+    .modal-header {
+      display: flex;
+      position: relative;
+      align-items: center;
+      justify-content: center;
+      border: none;
+
+      button {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+      }
+    }
+
+    .modal-body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-footer {
+      display: flex;
+      border: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-success{
+      background-color: $green1;
+      border-color: $green1;
+    }
+  }
+}

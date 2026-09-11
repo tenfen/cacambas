@@ -1,0 +1,29 @@
+
+.processor-modal {
+
+  .modal-content {
+    background-color: #2b2b2b;
+  }
+
+  .processor-modal--header {
+    label {
+      color: #FFFFFF;
+    }
+
+  }
+
+  .processor-modal--body {
+    gap: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .processor-modal--body--form {
+      flex: 1;
+    }
+  }
+
+  .processor-modal--footer {
+
+  }
+}

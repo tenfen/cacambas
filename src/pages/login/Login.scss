@@ -1,0 +1,59 @@
+@use '../../styles/abstract' as *;
+
+
+#login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: $dark-one;
+    background-image: url('../../assets/images/background.png');
+    background-position: center;
+    background-size: cover;
+    width: 100%;
+    height: 100%;
+
+    .content {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        width: 20%;
+        min-width: 300px;
+        height: 100%;
+        margin-top: 15%;
+        
+        .logomarca{
+            width: 50%;
+            margin: 20px;
+        }
+
+        .login-inputs {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            justify-content: center;
+            background-color: $dark-three;
+            border-radius: 5px;
+            border: none;
+            color: $gray1;
+            align-items: center;
+
+            h1 {
+                width: 100%;
+                text-align: center;
+                margin: 10px 0 20px 0;
+                font-size: 20px;
+            }
+
+            .input-standard {
+                margin: 0;
+                min-width: 90%;
+            }
+            
+            .button-standard {
+                margin: 20px ;
+                width: 90%;
+            }
+        }
+    }
+}

@@ -1,0 +1,65 @@
+@use './abstract' as *;
+
+
+
+body {
+    margin: 0;
+    font-family: 'Roboto', 'sans-serif';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+      monospace;
+  }
+  
+* {
+  margin: 0;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  width: 100%;
+  height: 100%;
+
+  .content {
+    display: flex;
+    background-color: $dark-three;
+    height: 93%;
+    
+
+    .main-content {
+      display: flex;
+      position: relative;
+      flex-direction: column;
+      flex-basis: 85%;
+      height: 100%;
+
+      section {
+        display: flex;
+        flex-direction: column;
+        flex-basis: 93%;
+        height: 93%;
+        position: relative;
+
+      }
+
+      footer {
+        display: flex;
+        flex-basis: 7%;
+        height: 7%;
+        width: 100%;
+
+      }
+    }
+  }
+}

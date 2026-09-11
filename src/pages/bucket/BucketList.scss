@@ -1,0 +1,31 @@
+@import '../../styles/abstract/colors';
+
+.brand-list {
+  padding: 20px;
+
+  .brand-list--header {
+    display: flex;
+    justify-content: space-between;
+    color: #FFFFFF;
+    box-sizing: border-box;
+
+    h2 {
+      color: $gray1;
+      margin: 0;
+    }
+  }
+
+  .brand-list--body {
+    .brand-list--body--top {
+
+    }
+
+    .brand-list--body--bottom {
+      gap: 10px;
+      display: flex;
+      padding: 10px 0;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
+}

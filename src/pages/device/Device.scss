@@ -1,0 +1,356 @@
+@import '../../styles/abstract/_colors.scss';
+
+#device {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow-y: scroll;
+
+  .device-header {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 10%;
+    color: $gray1;
+    font-size: 0.675rem;
+
+    .title {
+      text-align: center;
+    }
+
+    .back-content {
+      background-color: transparent;
+      padding: 10px 0 20px 0;
+      justify-content: space-between;
+      display: flex;
+
+      div {
+        display: flex;
+        flex-basis: auto;
+        align-items: center;
+
+        margin: 0;
+      }
+
+      .back-content--button-group {
+        gap: 5px;
+        display: flex;
+        justify-content: space-between;
+
+        .trash-icon {
+          border: 1px solid #f65b68;
+          background-color: #f65b68;
+          display: flex;
+          flex-basis: 5%;
+          justify-content: center;
+          align-items: center;
+          padding: 10px;
+          height: 40px;
+          cursor: pointer;
+
+          &:hover {
+            transform: scale(1.1);
+          }
+
+          svg {
+            font-size: 18px;
+            color: #FFF;
+          }
+        }
+
+        .disabled {
+          opacity: 0.5;
+          pointer-events: none;
+        }
+      }
+    }
+
+  }
+
+  .device-body {
+    display: flex;
+    flex-basis: 100%;
+    flex-direction: row;
+    width: 100%;
+
+    .body-header {
+      display: flex;
+      flex-direction: column;
+      flex-basis: 20%;
+      padding: 0;
+      border: 1px solid $secondary-color;
+      border-radius: 5px;
+      margin-bottom: 10px;
+
+
+      .image-field {
+        display: flex;
+        flex-basis: 20%;
+        min-width: 150px;
+        min-height: 300px;
+        justify-content: center;
+        align-items: center;
+        font-size: 40px;
+        color: $gray1;
+        cursor: pointer;
+        background: linear-gradient(180deg, $primary-color, $secondary-color);
+        background-size: 300% 300%;
+
+        -webkit-animation: color-animation 5s ease infinite alternate;
+        -moz-animation: color-animation 5s ease infinite alternate;
+        animation: color-animation 5s ease infinite alternate;
+
+        &:hover {
+          svg {
+            -webkit-animation: scale-animation 1s ease;
+            -moz-animation: scale-animation 1s ease;
+            animation: scale-animation 1s ease;
+            transform: scale(1.1);
+
+
+          }
+
+        }
+
+      }
+
+      .info-field {
+        display: flex;
+        flex-wrap: wrap;
+        color: $gray1;
+        margin: 0;
+        align-items: center;
+        justify-content: center;
+
+        .info-title {
+          margin: 0;
+          display: flex;
+          width: 100%;
+          font-size: 0.900rem;
+          font-weight: 600;
+          // margin: 2px 0;
+          box-sizing: border-box;
+          padding: 10px 2px;
+          justify-content: center;
+          align-items: center;
+          background-color: $secondary-color;
+
+          .title {
+            margin: 0;
+            text-align: center;
+          }
+        }
+
+        .info-item {
+          margin: 0;
+        }
+
+
+      }
+
+      .categories {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        border-top: 1px solid $dark-one;
+        margin-top: 10px;
+
+        .category-prices {
+          width: 100%;
+          display: flex;
+          padding-bottom: 7px;
+          flex-direction: column;
+        }
+      }
+
+
+    }
+
+    .device-body-content {
+      display: flex;
+      flex-direction: column;
+      flex-basis: 80%;
+      margin-left: 20px;
+
+      .device-damage--title {
+        color: #FFFFFF;
+      }
+
+      .device-damages {
+        width: 70%;
+        display: flex;
+        border-radius: 5px;
+        flex-direction: column;
+        max-height: calc(100vh - 300px);
+        border: 2px solid $secondary-color;
+
+        .device-damage-item {
+          color: #fff;
+          display: flex;
+          padding: 10px;
+          justify-content: space-between;
+
+          label {
+            margin: 0;
+            font-size: 14px;
+            text-align: left;
+            width: 25%;
+
+            span {
+              color: $secondary-color;
+            }
+          }
+
+          label:first-child{
+            width: 50%;
+          }
+        }
+      }
+
+      .device-field {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+      }
+
+      .small {
+
+        .input-standard,
+        .select-standard {
+          width: 15%;
+          margin: 10px 5px
+        }
+
+      }
+
+      .meddium {
+        padding: 10px 0;
+        display: flex;
+        flex-direction: column;
+
+        .input-standard,
+        .select-standard {
+          width: 20%;
+          margin: 10px 5px
+        }
+
+        .category-content {
+          display: flex;
+        }
+      }
+
+      .large {
+
+        .input-standard,
+        .select-standard {
+          width: 30%;
+          margin: 10px 5px
+        }
+      }
+    }
+  }
+
+
+  .device-button {
+    display: flex;
+    flex-basis: 10%;
+    width: 100%;
+    bottom: 0;
+    justify-content: center;
+    align-items: center;
+
+
+  }
+}
+
+.content-title {
+  display: flex;
+  width: 100%;
+  color: $gray1;
+}
+
+.icon-back {
+  font-size: 25px;
+  margin: 0 10px 0 0;
+  color: $secondary-color;
+  cursor: pointer;
+
+  &:hover {
+    color: lighten($color: $secondary-color, $amount: 15);
+  }
+
+}
+
+
+// animation para cor de fundo do campo de insercao de imagem
+@-webkit-keyframes color-animation {
+  0% {
+    background-position: 0% 50%
+  }
+
+  50% {
+    background-position: 100% 50%
+  }
+
+  100% {
+    background-position: 0% 50%
+  }
+}
+
+@-moz-keyframes color-animation {
+  0% {
+    background-position: 0% 50%
+  }
+
+  50% {
+    background-position: 100% 50%
+  }
+
+  100% {
+    background-position: 0% 50%
+  }
+}
+
+@keyframes color-animation {
+  0% {
+    background-position: 0% 50%
+  }
+
+  50% {
+    background-position: 100% 50%
+  }
+
+  100% {
+    background-position: 0% 50%
+  }
+}
+
+// animation para aumentar icone do campo de inserçao de imagem
+@-webkit-keyframes scale-animation {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.1);
+  }
+}
+
+@-moz-keyframes scale-animation {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes scale-animation {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.1);
+  }
+}

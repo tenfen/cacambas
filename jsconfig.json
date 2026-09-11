@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src/",
+    "paths": {
+      "contexts/*": [
+        "contexts/*"
+      ],
+      "controllers/*": [
+        "controllers/*"
+      ],
+      "components/*": [
+        "components/*"
+      ],
+      "helpers/*": [
+        "helpers/*"
+      ],
+      "views/*": [
+        "views/*"
+      ],
+      "pages/*": [
+        "views/pages/*"
+      ],
+      "modals/*": [
+        "views/modals/*"
+      ]
+    }
+  },
+  "include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.scss", "src/**/*.css", "src/components/asyncSelect/AsyncSelect.jsx", "src/components/button/Button.jsx", "src/components/button/Button.test.jsx"],
+  "exclude": ["node_modules", "**/node_modules", "dist"]
+}

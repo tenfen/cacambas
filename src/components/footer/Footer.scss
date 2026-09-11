@@ -1,0 +1,38 @@
+@import '../../styles/abstract/colors';
+
+footer {
+  position: fixed;
+  color: $gray2;
+  align-items: center;
+  padding: 10px;
+  box-sizing: border-box;
+  border-top: 1px solid $dark-one;
+  bottom: 0;
+  margin: 0;
+  font-size: 14px;
+  background-color: $dark-three;
+
+  img {
+    // display: none;
+    height: 90%;
+    margin: 0 10px;
+  }
+
+  p {
+    margin: 0;
+    width: 80%;
+  }
+
+  a {
+    color: #fff;
+    margin: 0 10px;
+    right: 0;
+    text-align: right;
+    width: 20%;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+
+}
+

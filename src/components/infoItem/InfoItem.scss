@@ -1,0 +1,17 @@
+@use '../../styles/abstract' as *;
+
+.info-item {
+    width: 100%;
+    color: $secondary-color;
+    // margin: 2px 0;
+    font-size: small;
+    padding: 5px;
+    box-sizing: border-box;
+
+
+    .label {
+        font-weight: 600;
+        color: $gray1;
+
+    }
+}

@@ -1,0 +1,80 @@
+{
+  "name": "admin_smart-fipe",
+  "version": "1.0.8",
+  "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "start-dev": "env-cmd -f environments/.env.development react-scripts start",
+    "start-prd": "env-cmd -f environments/.env.production react-scripts start",
+    "build": "react-scripts build",
+    "build-dev": "BUILD_PATH='./build-development' env-cmd -f environments/.env.development react-scripts build",
+    "build-prd": "BUILD_PATH='./build-production' env-cmd -f environments/.env.production react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.1.1",
+    "@fortawesome/free-brands-svg-icons": "^6.2.0",
+    "@fortawesome/free-regular-svg-icons": "^6.1.1",
+    "@fortawesome/free-solid-svg-icons": "^6.1.1",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "ajv": "^8.17.1",
+    "axios": "^0.27.2",
+    "bootstrap": "^5.2.2",
+    "env-cmd": "^10.1.0",
+    "js-base64": "^3.7.2",
+    "js-sha256": "^0.9.0",
+    "react": "^18.2.0",
+    "react-alert": "^7.0.3",
+    "react-alert-template-basic": "^1.0.2",
+    "react-currency-input-field": "^3.6.9",
+    "react-dom": "^18.2.0",
+    "react-easy-crop": "^4.6.1",
+    "react-native-fs": "^2.20.0",
+    "react-query": "^3.39.2",
+    "react-router-dom": "^6.3.0",
+    "react-scripts": "5.0.1",
+    "react-select": "^5.4.0",
+    "react-select-event": "^5.5.1",
+    "reactstrap": "^9.1.4",
+    "sass": "^1.53.0",
+    "styled-components": "^5.3.5",
+    "web-vitals": "^2.1.4"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "eslint": "^8.23.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-import-resolver-webpack": "^0.13.2",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.6.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-testing-library": "^5.6.3",
+    "eslint-webpack-plugin": "^3.2.0",
+    "msw": "^0.47.0",
+    "prettier": "^2.7.1",
+    "webpack": "^5.74.0"
+  }
+}

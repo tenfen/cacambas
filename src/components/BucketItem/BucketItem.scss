@@ -1,0 +1,68 @@
+@import '../../styles/abstract/colors';
+
+.bucket-item {
+  gap: 2px;
+  height: 80px;
+  color: $gray1;
+  display: flex;
+  min-width: 300px;
+  max-height: 95px;
+  border-radius: 5px;
+  text-decoration: none;
+  box-sizing: border-box;
+  flex: 0 1 calc(33% - 5px);
+  background-color: $dark-one;
+  border: 1px solid $secondary-color;
+
+  .bucket-item--left {
+    width: 25%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: $secondary-color;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      border-top-left-radius: 5px;
+      //mix-blend-mode: multiply;
+    }
+
+  }
+
+  .bucket-item--center {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    flex-basis: 70%;
+    padding: 10px 10px;
+
+    strong {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 500;
+    }
+  }
+
+  .bucket-item--right {
+    display: flex;
+    flex-basis: 10%;
+    padding: 10px;
+    justify-content: flex-end;
+    align-items: center;
+    color: $secondary-color;
+
+    svg {
+      font-size: 22px;
+    }
+
+  }
+
+  &:hover {
+    color: #FFFFFF;
+    background-image: linear-gradient(darken($color: $primary-color, $amount: 20), darken($color: $secondary-color, $amount: 20));
+  }
+}
+

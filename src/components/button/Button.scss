@@ -1,0 +1,23 @@
+@import '../../styles/abstract/colors';
+
+.button-standard {
+  width: 150px;
+  height: 40px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 500 !important;
+  color: white;
+  background-image: $gradiente;
+  cursor: pointer;
+  border: none;
+
+  &:hover {
+    background-image: linear-gradient(darken($color: $primary-color, $amount: 20), darken($color: $secondary-color, $amount: 20));
+  }
+
+  svg {
+    font-size: 14px;
+    margin-right: 10px;
+    color: darken($color: #FFFFFF, $amount: 0);
+  }
+}
