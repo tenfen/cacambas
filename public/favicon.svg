@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 40 1200 900" role="img" aria-label="Cacambix">
+  <defs>
+    <linearGradient id="tubGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FCC366" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="1200" rx="160" fill="#FBF9F5" />
+
+  <ellipse cx="470" cy="500" rx="95" ry="58" fill="#6B7280" />
+  <ellipse cx="620" cy="465" rx="115" ry="68" fill="#9CA3AF" />
+  <ellipse cx="760" cy="502" rx="90" ry="55" fill="#4B5563" />
+
+  <polygon points="300,520 900,520 760,790 440,790" fill="url(#tubGrad)" />
+  <polygon points="900,520 940,542 792,812 760,790" fill="#E2650B" />
+  <rect x="300" y="508" width="600" height="22" rx="11" fill="#FDE2AE" />
+
+  <circle cx="862" cy="772" r="132" fill="#FBF9F5" />
+  <circle cx="862" cy="772" r="110" fill="#1B1748" />
+  <path d="M808,774 L845,811 L920,730" fill="none" stroke="#FFFFFF" stroke-width="26" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

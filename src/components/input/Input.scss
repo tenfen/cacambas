@@ -13,24 +13,24 @@
   }
 
   input {
-    background-color: $dark-one;
+    background-color: #ffffff !important;
     height: 40px;
     border-radius: 5px;
     padding-left: 10px;
-    color: $gray1;
+    color: #000000 !important;
     font-size: 0.750rem;
     width: 100%;
     box-sizing: border-box;
-    border: 1px solid $secondary-color;
+    border: 1px solid #e5e7eb;
 
     &:focus-visible {
-      border-color: $secondary-color;
-      box-shadow: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
       outline: none;
     }
 
     &:hover {
-      border-color: $secondary-color;
+      border-color: #667eea;
     }
 
     // Remove arrows from input Number
@@ -43,6 +43,7 @@
     /* Firefox */
     &[type=number] {
       -moz-appearance: textfield;
+      appearance: textfield;
     }
 
 
@@ -50,13 +51,9 @@
     &:-webkit-autofill:hover,
     &:-webkit-autofill:focus,
     &:-webkit-autofill:active {
-      -webkit-box-shadow: 0 0 0 30px $dark-one inset !important;
-      -webkit-text-fill-color: $gray1 !important;
+      -webkit-box-shadow: 0 0 0 30px #ffffff inset !important;
+      -webkit-text-fill-color: #000000 !important;
     }
   }
 
-}
-
-.text {
-  // min-width: 300px;
 }

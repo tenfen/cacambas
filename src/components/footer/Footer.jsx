@@ -4,7 +4,7 @@ import React from "react"
 import "./Footer.scss"
 
 // Assets
-import Logo from "../../assets/images/logo.png"
+import Logo from "../../assets/images/logo.svg"
 import AuthContext from "../../contexts/AuthContext"
 
 export default function Footer() {
@@ -15,10 +15,13 @@ export default function Footer() {
       <img src={Logo} alt="logomarca" />
       {/* </span>/ */}
       <p className="rights">
-        iCellFipe - Todos os direitos reservados <strong>(v{version})</strong>
+        Cacambix - Todos os direitos reservados <strong>(v{version})</strong>
       </p>
-      <a href="/" className="privacy">
-        Politica de privacidade
+      <a href="/termos" target="_blank" rel="noreferrer" className="privacy">
+        Termos de Uso
+      </a>
+      <a href="/privacidade" target="_blank" rel="noreferrer" className="privacy">
+        Política de Privacidade
       </a>
     </footer>
   )

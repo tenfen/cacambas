@@ -1,19 +1,20 @@
 @use './abstract' as *;
 
-
-
 body {
-    margin: 0;
-    font-family: 'Roboto', 'sans-serif';
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  
-  code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-      monospace;
-  }
-  
+  margin: 0;
+  font-family: 'Roboto', 'sans-serif';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  background-color: #F5F6FA;
+  color: #252525;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
 * {
   margin: 0;
 }
@@ -27,38 +28,43 @@ body {
 .App {
   display: flex;
   flex-direction: column;
-  flex-basis: 100%;
   width: 100%;
   height: 100%;
 
+  // Área de conteúdo scrollável (sem header agora)
   .content {
     display: flex;
-    background-color: $dark-three;
-    height: 93%;
-    
+    background-color: #F5F6FA;
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
 
     .main-content {
       display: flex;
-      position: relative;
       flex-direction: column;
-      flex-basis: 85%;
+      flex: 1;
       height: 100%;
+      overflow-y: auto;
+      position: relative;
+      background-color: #F5F6FA;
+
+      .content-wrapper {
+        flex: 1;
+        min-height: fit-content;
+      }
+
+      footer {
+        width: 100%;
+        flex-shrink: 0;
+        margin-top: auto;
+        background-color: #FFFFFF;
+        border-top: 1px solid #E5E7EB;
+      }
 
       section {
         display: flex;
         flex-direction: column;
-        flex-basis: 93%;
-        height: 93%;
         position: relative;
-
-      }
-
-      footer {
-        display: flex;
-        flex-basis: 7%;
-        height: 7%;
-        width: 100%;
-
       }
     }
   }

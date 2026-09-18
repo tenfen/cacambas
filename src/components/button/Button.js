@@ -4,9 +4,9 @@ import React from "react"
 import "./Button.scss"
 
 export default function Button(props) {
-  const { className = "", children } = props
+  const { className = "", variant = "primary", children, ...rest } = props
   return (
-    <button className={"button-standard " + className} {...props}>
+    <button className={`button-standard button-${variant} ${className}`} {...rest}>
       {children}
     </button>
   )

@@ -154,7 +154,7 @@ export function Input(props) {
   if (type === "currency") {
     return (
       <fieldset className={`${type} input-standard `}>
-        <label>{title}:</label>
+        {title && <label>{title}:</label>}
         <CurrencyInput
           prefix="R$ "
           placeholder="R$ 0,00"
@@ -170,7 +170,7 @@ export function Input(props) {
 
   return (
     <fieldset className={`${type} input-standard `}>
-      <label>{title}:</label>
+      {title && <label>{title}:</label>}
       <input {...loadingProps()} role={title} />
     </fieldset>
   )

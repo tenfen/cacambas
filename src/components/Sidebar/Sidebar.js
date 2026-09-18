@@ -1,88 +1,108 @@
 import React from "react"
-
-// Components
+import { Link, useLocation } from "react-router-dom"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faHouseChimney, faMobile, faGear, faUser, faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons"
-
-// Styles
-import "./Sidebar.scss"
-import { Link } from "react-router-dom"
-
-// Contexts
+import {
+  faChartLine,
+  faArrowRightFromBracket,
+  faBars,
+  faTimes,
+  faUsers,
+  faDumpster,
+  faAddressBook,
+  faUserCircle,
+} from "@fortawesome/free-solid-svg-icons"
 import AuthContext from "contexts/AuthContext"
+import { isUserRole } from "helpers/role"
+import { removeSessionItem } from "helpers/StorageTools"
+import "./Sidebar.scss"
+
+const ADMIN_MENU_ITEMS = [
+  { path: "/", icon: faChartLine, label: "Dashboard" },
+  { path: "/users", icon: faUsers, label: "Usuários" },
+]
+
+const USER_MENU_ITEMS = [
+  { path: "/", icon: faChartLine, label: "Dashboard" },
+  { path: "/cacambas", icon: faDumpster, label: "Caçambas" },
+  { path: "/clientes", icon: faAddressBook, label: "Clientes" },
+  { path: "/perfil", icon: faUserCircle, label: "Meu Perfil" },
+]
 
 export default function Sidebar() {
-  const { setUser } = React.useContext(AuthContext)
+  const { user, setUser } = React.useContext(AuthContext)
+  const location = useLocation()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
+
+  const papelUser = isUserRole(user?.userLogged?.userRole)
+  const menuItems = papelUser ? USER_MENU_ITEMS : ADMIN_MENU_ITEMS
+
+  const isActive = (path) =>
+    path === "/" ? location.pathname === "/" : location.pathname.startsWith(path)
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false)
+  }
 
   return (
-    <nav>
-      <div className="filter" />
-      <ul>
-        <li>
-          <Link to={`/`}>
-            <div className="circle">
-              <FontAwesomeIcon icon={faHouseChimney} color={"white"} />
-            </div>
-            Início
-          </Link>
-        </li>
-        <li>
-          <Link to={`/buckets`}>
-            <div className="circle">
-              <FontAwesomeIcon icon="list-check" color={"white"} />
-            </div>
-            Marcas
-          </Link>
-        </li>
-        <li className="active">
-          <Link to={`/devices`}>
-            <div className="circle">
-              <FontAwesomeIcon icon={faMobile} color={"white"} />
-            </div>
-            Aparelhos
-          </Link>
-        </li>
-        <li className="active">
-          <Link to={`/assistances`}>
-            <div className="circle">
-              <FontAwesomeIcon icon={faMobile} color={"white"} />
-            </div>
-            Assistências
-          </Link>
-        </li>
-        <li>
-          <Link to={`/damages`}>
-            <div className="circle">
-              <FontAwesomeIcon icon="list-check" color={"white"} />
-            </div>
-            Tipos de Danos
-          </Link>
-        </li>
-        {/*<li>*/}
-        {/*  <Link to={`/`}>*/}
-        {/*    <div className="circle">*/}
-        {/*      <FontAwesomeIcon icon={faGear} color={"white"} />*/}
-        {/*    </div>*/}
-        {/*    Configurações*/}
-        {/*  </Link>*/}
-        {/*</li>*/}
-        {/*<li>*/}
-        {/*  <Link to={`/`}>*/}
-        {/*    <div className="circle">*/}
-        {/*      <FontAwesomeIcon icon={faUser} color={"white"} />*/}
-        {/*    </div>*/}
-        {/*    Perfil*/}
-        {/*  </Link>*/}
-        {/*</li>*/}
-        <li>
-          <label onClick={() => setUser(null)}>
-            <div className="circle">
-              <FontAwesomeIcon icon={faArrowRightFromBracket} color={"white"} />
-            </div>
-            Sair
-          </label>
-        </li>
-      </ul>
-    </nav>
+    <>
+      {/* Botão Hamburger Mobile */}
+      <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
+        <FontAwesomeIcon icon={faBars} />
+      </button>
+
+      {/* Overlay/Backdrop */}
+      {isMobileMenuOpen && (
+        <div className="mobile-menu-overlay" onClick={closeMobileMenu} />
+      )}
+
+      {/* Sidebar */}
+      <nav className={`sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+        {/* Botão fechar dentro do menu mobile */}
+        <button className="mobile-menu-close" onClick={closeMobileMenu}>
+          <FontAwesomeIcon icon={faTimes} />
+        </button>
+
+        <div className="sidebar-header">
+          <h2 className="sidebar-logo">Cacambix</h2>
+          <p className="sidebar-subtitle">{papelUser ? "Minha Conta" : "Admin Panel"}</p>
+        </div>
+
+        <ul className="sidebar-menu">
+          {menuItems.map((item) => (
+            <li key={item.path} className={isActive(item.path) ? "active" : ""}>
+              <Link to={item.path} onClick={closeMobileMenu}>
+                <div className="menu-icon">
+                  <FontAwesomeIcon icon={item.icon} />
+                </div>
+                <span className="menu-label">{item.label}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        <div className="sidebar-footer">
+          <li>
+            <label
+              onClick={() => {
+                removeSessionItem("authToken");
+                removeSessionItem("user");
+                setUser(null);
+                closeMobileMenu();
+              }}
+              className="logout-btn"
+            >
+              <div className="menu-icon">
+                <FontAwesomeIcon icon={faArrowRightFromBracket} />
+              </div>
+              <span className="menu-label">Sair</span>
+            </label>
+          </li>
+        </div>
+      </nav>
+    </>
   )
 }

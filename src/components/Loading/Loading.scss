@@ -1,57 +1,227 @@
 @import '../../styles/abstract/colors';
 
+/* Loading Screen - Modern & Glassmorphism */
 .loading {
-  z-index: 4;
+  z-index: 9999;
   width: 100%;
   height: 100%;
   display: flex;
-  position: absolute;
+  position: fixed;
+  top: 0;
+  left: 0;
   align-items: center;
-  flex-direction: column;
   justify-content: center;
-  background-color: rgba(225, 225, 225, 0.2);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.loading-container {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+}
+
+.loading-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: 60px 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  animation: fadeInScale 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Barra animada no topo com flow de cor */
+.loading-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, #06b6d4, #6366f1, #06b6d4, transparent);
+    animation: flowBar 2s linear infinite;
+  }
+}
+
+.loading-image {
+  height: 80px;
+  width: auto;
+  margin-bottom: 24px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.loading-text {
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  opacity: 0.95;
+  animation: textPulse 2s ease-in-out infinite;
+  min-height: 24px;
+}
+
+.loading-messages {
+  margin-top: 12px;
+  max-height: 140px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.loading-message-item {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: left;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+  line-height: 1.4;
+
+  &.active {
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.15);
+    font-weight: 500;
+  }
+
+  &.faded {
+    opacity: 0.5;
+  }
+}
+
+/* Animações */
+@keyframes flowBar {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+@keyframes textPulse {
+  0%, 100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Action buttons (confirmação na modal) */
+.loading-action {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeInScale 0.4s ease;
+}
+
+.loading-action-message {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.5;
+  margin-bottom: 14px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 12px 14px;
+  border-left: 3px solid #fbbf24;
+}
+
+.loading-action-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.loading-action-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+
+  &--yes {
+    background: rgba(255, 255, 255, 0.95);
+    color: #667eea;
+
+    &:hover {
+      background: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  &--no {
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .loading-card {
+    padding: 40px 24px;
+    margin: 10px;
+    border-radius: 20px;
+  }
 
   .loading-image {
-    height: 40px;
-    animation-name: logo;
-    animation-duration: 1s;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
+    height: 60px;
   }
 
-  p {
-    font-size: 18px;
-    margin-top: 20px;
-    -webkit-text-fill-color: transparent;
-    animation-name: text-animation;
-    animation-duration: 1s;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-
-
+  .loading-text {
+    font-size: 16px;
   }
-}
-
-@keyframes logo {
-  from {
-    transform: scale(1);
-  }
-
-  to {
-    transform: scale(1.4);
-  }
-}
-
-@keyframes text-animation {
-  from {
-    color: $primary-color;
-    text-shadow: -1px 2px $secondary-color;
-  }
-
-  to {
-    color: $secondary-color;
-    text-shadow: -1px 2px $primary-color;
-
-  }
-
 }

@@ -1,0 +1,164 @@
+@use '../../styles/abstract' as *;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#subscription {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(52, 43, 120, 0.35),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 85% 80%,
+      rgba(245, 158, 11, 0.18),
+      transparent 35%
+    ),
+    linear-gradient(
+      135deg,
+      #1B1748 0%,
+      #25205F 50%,
+      #342B78 100%
+    );
+
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+  padding: 40px 20px;
+  line-height: 1.6;
+
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.subscription-container {
+  width: 100%;
+  max-width: 420px;
+}
+
+.subscription-card {
+  background: rgba(255, 255, 255, 0.96);
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 24px;
+
+  padding: 40px;
+
+  box-shadow:
+    0 30px 80px rgba(10, 15, 50, 0.35),
+    0 8px 30px rgba(10, 15, 50, 0.15);
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.subscription-header {
+  text-align: center;
+  margin-bottom: 4px;
+
+  .logomarca {
+    max-width: 120px;
+    margin: 0 auto 16px;
+    display: block;
+  }
+
+  h2 {
+    color: #1B1748;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  p {
+    color: #6b7280;
+    font-size: 14px;
+  }
+}
+
+.plan-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  background: rgba(52, 43, 120, 0.06);
+  border: 1px solid rgba(52, 43, 120, 0.15);
+  border-radius: 16px;
+  padding: 20px;
+
+  .plan-name {
+    font-weight: 600;
+    color: #1B1748;
+    font-size: 15px;
+  }
+
+  .plan-price {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1B1748;
+
+    small {
+      font-size: 14px;
+      font-weight: 500;
+      color: #6b7280;
+    }
+  }
+}
+
+.subscription-error {
+  background: rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  color: #b91c1c;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+}
+
+.subscription-waiting {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #92400e;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+}
+
+.subscription-footer {
+  text-align: center;
+
+  button {
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: underline;
+
+    &:hover {
+      color: #1B1748;
+    }
+  }
+}

@@ -1,0 +1,98 @@
+.cacamba-form {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+
+  .cacamba-form-header {
+    margin-bottom: 2rem;
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+
+      .header-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        .header-icon {
+          font-size: 2.5rem;
+          color: #1B1748;
+        }
+
+        h1 {
+          font-size: 1.75rem;
+          font-weight: 700;
+          margin: 0;
+          color: #2c3e50;
+        }
+
+        p {
+          font-size: 0.95rem;
+          color: #7f8c8d;
+          margin: 0.25rem 0 0 0;
+        }
+      }
+    }
+  }
+
+  .form-content {
+    .form-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+
+      @media (max-width: 560px) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .input-standard {
+      border: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+
+      label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #2c3e50;
+      }
+
+      input,
+      select {
+        border: 1px solid #dfe3e8;
+        border-radius: 8px;
+        padding: 0.65rem 0.85rem;
+        font-size: 0.95rem;
+
+        &:focus {
+          outline: none;
+          border-color: #342B78;
+        }
+      }
+    }
+
+    .form-actions {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+    }
+  }
+}

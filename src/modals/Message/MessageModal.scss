@@ -1,40 +1,160 @@
-@import '../../styles/abstract/_colors.scss';
+/* Glassmorphism Message Modal - Modern & Informative */
 
-.message-modal {
-  .modal-content {
-    background-color: #2b2b2b;
-    color: #FFFFFF;
+.message-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease-out;
+}
 
-    .modal-header {
-      display: flex;
-      position: relative;
-      align-items: center;
-      justify-content: center;
-      border: none;
+.message-modal-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: 40px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  position: relative;
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 
-      button {
-        position: absolute;
-        right: 10px;
-        top: 10px;
-      }
-    }
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #06b6d4, transparent);
+    animation: shimmer 2s ease-in-out infinite;
+  }
+}
 
-    .modal-body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+.message-icon {
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  background: rgba(6, 182, 212, 0.1);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
 
-    .modal-footer {
-      display: flex;
-      border: none;
-      align-items: center;
-      justify-content: center;
-    }
+  svg {
+    filter: drop-shadow(0 2px 8px rgba(6, 182, 212, 0.3));
+  }
+}
 
-    .btn-success{
-      background-color: $green1;
-      border-color: $green1;
-    }
+.message-title {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.message-content {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.message-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.message-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #06b6d4);
+  border-radius: 2px;
+  animation: progress 3s linear forwards;
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+@keyframes progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .message-modal-card {
+    padding: 30px 24px;
+    max-width: 340px;
+  }
+
+  .message-title {
+    font-size: 1.25rem;
+  }
+
+  .message-content {
+    font-size: 0.9rem;
   }
 }

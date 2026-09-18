@@ -1,0 +1,188 @@
+.cliente-list {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .cliente-list-header {
+    margin-bottom: 2rem;
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+
+      .header-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        .header-icon {
+          font-size: 2.5rem;
+          color: #1B1748;
+        }
+
+        h1 {
+          font-size: 2rem;
+          font-weight: 700;
+          margin: 0;
+          color: #2c3e50;
+        }
+
+        p {
+          font-size: 0.95rem;
+          color: #7f8c8d;
+          margin: 0.25rem 0 0 0;
+        }
+      }
+    }
+  }
+
+  .cliente-table {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow-x: auto;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 640px;
+
+      thead {
+        background: linear-gradient(135deg, #342B78 0%, #1B1748 100%);
+
+        tr th {
+          padding: 1rem;
+          text-align: left;
+          font-weight: 600;
+          font-size: 0.875rem;
+          color: white;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+
+          &.center-text {
+            text-align: center;
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          border-bottom: 1px solid #ecf0f1;
+          transition: background 0.2s;
+
+          &:hover {
+            background: #f8f9fa;
+          }
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          td {
+            padding: 1rem;
+            vertical-align: middle;
+            color: #2c3e50;
+
+            &.center-text {
+              text-align: center;
+            }
+
+            &.text-center {
+              text-align: center;
+              color: #7f8c8d;
+              font-style: italic;
+            }
+
+            .badge {
+              display: inline-block;
+              padding: 0.35rem 0.75rem;
+              border-radius: 20px;
+              font-size: 0.75rem;
+              font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+
+              &.badge-active {
+                background: #d4edda;
+                color: #155724;
+              }
+
+              &.badge-inactive {
+                background: #f8d7da;
+                color: #721c24;
+              }
+            }
+
+            .actions {
+              display: flex;
+              gap: 0.5rem;
+              justify-content: center;
+
+              .action-btn {
+                width: 36px;
+                height: 36px;
+                border-radius: 6px;
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+                font-size: 0.9rem;
+
+                &.action-route {
+                  background: #d1e7ff;
+                  color: #0b5ed7;
+                  text-decoration: none;
+
+                  &:hover {
+                    background: #0d6efd;
+                    color: white;
+                    transform: translateY(-2px);
+                  }
+                }
+
+                &.action-recolher {
+                  background: #d4edda;
+                  color: #155724;
+
+                  &:hover {
+                    background: #22c55e;
+                    color: white;
+                    transform: translateY(-2px);
+                  }
+                }
+
+                &.action-edit {
+                  background: #fff3cd;
+                  color: #856404;
+
+                  &:hover {
+                    background: #ffc107;
+                    color: white;
+                    transform: translateY(-2px);
+                  }
+                }
+
+                &.action-delete {
+                  background: #f8d7da;
+                  color: #721c24;
+
+                  &:hover {
+                    background: #dc3545;
+                    color: white;
+                    transform: translateY(-2px);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

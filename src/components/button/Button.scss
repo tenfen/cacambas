@@ -1,23 +1,110 @@
-@import '../../styles/abstract/colors';
-
 .button-standard {
-  width: 150px;
-  height: 40px;
-  border-radius: 5px;
+  min-width: 160px;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 12px;
   font-size: 14px;
-  font-weight: 500 !important;
-  color: white;
-  background-image: $gradiente;
+  font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
   border: none;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
 
-  &:hover {
-    background-image: linear-gradient(darken($color: $primary-color, $amount: 20), darken($color: $secondary-color, $amount: 20));
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
   }
 
   svg {
-    font-size: 14px;
-    margin-right: 10px;
-    color: darken($color: #FFFFFF, $amount: 0);
+    font-size: 16px;
+  }
+}
+
+/*
+ * Mesmo gradiente/cores do botão "Entrar" da tela de login — referência
+ * visual da marca Cacambix, usada como ação principal em toda a
+ * aplicação.
+ */
+.button-primary {
+  color: white;
+  background: linear-gradient(135deg, #25205F 0%, #342B78 55%, #F59E0B 100%);
+  box-shadow: 0 4px 15px rgba(37, 32, 95, 0.3);
+  position: relative;
+  overflow: hidden;
+
+  svg {
+    color: white;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left 0.5s ease;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 32, 95, 0.4);
+
+    &::before {
+      left: 100%;
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+/*
+ * Ação secundária/discreta (ex: "Cancelar").
+ */
+.button-secondary {
+  color: #7f8c8d;
+  background: #ecf0f1;
+
+  &:hover:not(:disabled) {
+    background: #dfe3e8;
+  }
+}
+
+/*
+ * Ação secundária, mas com mais destaque que a "secondary" (ex:
+ * "Já paguei, verificar" ao lado de uma ação primária).
+ */
+.button-outline {
+  color: #342B78;
+  background: transparent;
+  border: 1px solid rgba(52, 43, 120, 0.3);
+
+  &:hover:not(:disabled) {
+    background: rgba(52, 43, 120, 0.06);
+  }
+}
+
+/*
+ * Ação destrutiva (ex: excluir).
+ */
+.button-danger {
+  color: white;
+  background: #dc3545;
+
+  &:hover:not(:disabled) {
+    background: #c82333;
   }
 }

@@ -1,30 +1,52 @@
-import { Route, Routes } from "react-router-dom"
+import { useContext } from "react"
+import { Navigate, Route, Routes } from "react-router-dom"
 import { DefaultLayout } from "./layout/DefaultLayout"
+import AuthContext from "contexts/AuthContext"
+import { isUserRole } from "helpers/role"
 
-import Device from "./pages/device/Device"
-import BucketList from "./pages/bucket/BucketList"
-import DeviceList from "./pages/device/DeviceList"
-import DamageList from "./pages/damage/DamageList"
-import AssistanceList from "./pages/assistances/AssistanceList"
-import Assistance from "./pages/assistances/Assistance"
+// Páginas do admin
+import Dashboard from "./pages/dashboard/Dashboard"
+import UserManagement from "./pages/users/UserManagement"
+
+// Páginas do usuário (dono do negócio)
+import DashboardUser from "./pages/dashboardUser/DashboardUser"
+import CacambaList from "./pages/cacambas/CacambaList"
+import CacambaForm from "./pages/cacambas/CacambaForm"
+import ClienteList from "./pages/clientes/ClienteList"
+import ClienteForm from "./pages/clientes/ClienteForm"
+import PerfilUsuario from "./pages/perfil/PerfilUsuario"
 
 export function Router() {
+  const { user } = useContext(AuthContext)
+  const isUser = isUserRole(user?.userLogged?.userRole)
+
   return (
     <Routes>
       <Route path="/" element={<DefaultLayout />}>
-        <Route path="/" element={<DeviceList />} />
+        {isUser ? (
+          <>
+            <Route index element={<DashboardUser />} />
 
-        <Route path="/buckets" element={<BucketList />} />
-        <Route path="/damages" element={<DamageList />} />
-        <Route path="/devices" element={<DeviceList />} />
+            <Route path="/cacambas" element={<CacambaList />} />
+            <Route path="/cacambas/novo" element={<CacambaForm />} />
+            <Route path="/cacambas/editar/:id" element={<CacambaForm />} />
 
-        <Route path="/device/new" element={<Device />} />
+            <Route path="/clientes" element={<ClienteList />} />
+            <Route path="/clientes/novo" element={<ClienteForm />} />
+            <Route path="/clientes/editar/:id" element={<ClienteForm />} />
 
-        <Route path="/device/update/:deviceId" element={<Device />} />
-        <Route path="/assistances" element={<AssistanceList />} />
-        <Route path="/assistance/new" element={<Assistance />} />
-        <Route path="/assistance/update/:assistanceId" element={<Assistance />} />
+            <Route path="/perfil" element={<PerfilUsuario />} />
 
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </>
+        ) : (
+          <>
+            <Route index element={<Dashboard />} />
+
+            <Route path="/users" element={<UserManagement />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </>
+        )}
       </Route>
     </Routes>
   )
