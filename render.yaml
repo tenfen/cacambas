@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: adm-icell-fipe
+    name: cacambix
     runtime: static
     buildCommand: yarn && yarn build
     staticPublishPath: ./build
