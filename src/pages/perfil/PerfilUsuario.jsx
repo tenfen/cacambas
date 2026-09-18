@@ -19,7 +19,7 @@ const POLL_INTERVAL_MS = 5000;
 const POLL_TIMEOUT_MS = 10 * 60 * 1000;
 
 const PLANO_NOME = "Plano Profissional";
-const PLANO_VALOR = "R$ 5,00 / mês";
+const PLANO_VALOR = "R$ 89,90 / mês";
 
 const ACCOUNT_STATUS_LABELS = {
   trial: "Teste grátis",

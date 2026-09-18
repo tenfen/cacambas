@@ -160,7 +160,7 @@ export function Landing({ onLogin, onRegister }) {
           <div className="landing-plan-card">
             <span className="landing-plan-badge">5 dias grátis para testar</span>
             <div className="landing-plan-price">
-              <span className="landing-plan-amount">R$ 5,00</span>
+              <span className="landing-plan-amount">R$ 89,90</span>
               <span className="landing-plan-period">/ mês</span>
             </div>
             <ul className="landing-plan-list">

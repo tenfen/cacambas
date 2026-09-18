@@ -53,7 +53,8 @@ export function Termos() {
       <h2>6. Assinatura e cobrança</h2>
       <p>
         Após o período de teste, o uso do Cacambix está sujeito ao pagamento de
-        uma mensalidade no valor de R$ 5,00 (cinco reais), podendo este valor
+        uma mensalidade no valor de R$ 89,90 (oitenta e nove reais e noventa
+        centavos), podendo este valor
         ser reajustado mediante aviso prévio. O
         pagamento é processado através do Mercado Pago, via Pix ou cartão de
         crédito, e é cobrado mensalmente de forma recorrente enquanto a

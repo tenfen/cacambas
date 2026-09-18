@@ -155,7 +155,7 @@ export default function Subscription({ user, onBack, onPaymentFinished }) {
           <div className="plan-box">
             <span className="plan-name">Plano Profissional</span>
             <span className="plan-price">
-              R$ 5,00 <small>/ mês</small>
+              R$ 89,90 <small>/ mês</small>
             </span>
           </div>
 
