@@ -4,7 +4,7 @@ const PaymentController = {
   createCheckout: (userId) => {
     return API.request(
       "/payment/create-checkout",
-      { userId },
+      { userId, platform: "web" },
       "POST"
     );
   },
