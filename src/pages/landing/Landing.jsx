@@ -192,9 +192,12 @@ export function Landing({ onLogin, onRegister }) {
       </section>
 
       <footer className="landing-footer">
-        <p className="landing-footer-rights">
-          Cacambix - Todos os direitos reservados
-        </p>
+        <div className="landing-footer-brand">
+          <img src={Logo} alt="Logo Cacambix" />
+          <p className="landing-footer-rights">
+            Cacambix - Todos os direitos reservados
+          </p>
+        </div>
         <nav className="landing-footer-links" aria-label="Documentos legais">
           <a href="/termos">Termos de Uso</a>
           <a href="/privacidade">Política de Privacidade</a>

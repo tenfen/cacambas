@@ -122,10 +122,11 @@
   margin-bottom: 32px;
 
   .logomarca {
-    width: 180px;
+    display: block;
+    width: 240px;
+    max-width: 100%;
     height: auto;
-
-    margin-bottom: 20px;
+    margin: 0 auto 20px;
 
     filter: drop-shadow(0 4px 8px rgba(37, 32, 95, 0.15));
   }
@@ -633,7 +634,7 @@
   }
 
   .login-header .logomarca {
-    width: 180px;
+    width: 220px;
   }
 
   .password-wrapper input {

@@ -387,7 +387,25 @@
   flex-wrap: wrap;
 }
 
+.landing-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+
+  img {
+    display: block;
+    flex: 0 0 auto;
+    width: 76px;
+    height: 54px;
+    object-fit: contain;
+    border-radius: 6px;
+    background: #FBF9F5;
+  }
+}
+
 .landing-footer-rights {
+  margin: 0;
   color: rgba(255, 255, 255, 0.75);
   font-size: 13px;
   line-height: 1.4;
@@ -417,6 +435,15 @@
     padding: 16px 20px;
     gap: 12px;
     align-items: flex-start;
+  }
+
+  .landing-footer-brand {
+    gap: 9px;
+
+    img {
+      width: 64px;
+      height: 46px;
+    }
   }
 
   .landing-footer-rights {

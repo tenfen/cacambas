@@ -113,10 +113,10 @@ export function Login({ onClick, onRegister, onForgotPassword, onBack }) {
                 onClick={onBack}
                 aria-label="Voltar para a página inicial"
               >
-                <img src={Logo} alt="Logomarca" className="logomarca" />
+                <img src={Logo} alt="Logo Cacambix" className="logomarca" />
               </button>
             ) : (
-              <img src={Logo} alt="Logomarca" className="logomarca" />
+              <img src={Logo} alt="Logo Cacambix" className="logomarca" />
             )}
             <h2>Bem-vindo de volta</h2>
             <p>Acesse o painel administrativo</p>
