@@ -46,6 +46,23 @@
       gap: 1.25rem;
     }
 
+    .legal-document-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 1.5rem;
+
+      a {
+        color: #342B78;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
     .card-title {
       font-size: 1rem;
       font-weight: 700;

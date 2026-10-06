@@ -69,3 +69,28 @@ code {
     }
   }
 }
+
+@media (max-width: 768px) {
+  .App .content {
+    flex-direction: column;
+
+    .main-content {
+      flex: 1;
+      height: auto;
+      min-height: 0;
+    }
+  }
+
+  .dashboard-header,
+  .user-management--header,
+  .perfil-usuario-header {
+    display: none;
+  }
+
+  .cacamba-list-header .header-title,
+  .cliente-list-header .header-title,
+  .cacamba-form-header .header-title,
+  .cliente-form-header .header-title {
+    display: none;
+  }
+}

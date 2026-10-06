@@ -433,6 +433,18 @@ export default function PerfilUsuario() {
             </Button>
           </div>
         </form>
+
+        <div className="form-card legal-documents">
+          <div className="card-title">Documentos legais</div>
+          <nav className="legal-document-links" aria-label="Documentos legais">
+            <a href="/termos" target="_blank" rel="noreferrer">
+              Termos de Uso
+            </a>
+            <a href="/privacidade" target="_blank" rel="noreferrer">
+              Política de Privacidade
+            </a>
+          </nav>
+        </div>
       </div>
     </section>
   );

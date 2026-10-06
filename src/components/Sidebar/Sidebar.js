@@ -28,6 +28,19 @@ const USER_MENU_ITEMS = [
   { path: "/perfil", icon: faUserCircle, label: "Meu Perfil" },
 ]
 
+function getMobilePageTitle(pathname) {
+  if (pathname === "/") return "Dashboard"
+  if (pathname === "/users") return "Usuários"
+  if (pathname === "/cacambas/novo") return "Nova Caçamba"
+  if (pathname.startsWith("/cacambas/editar/")) return "Editar Caçamba"
+  if (pathname.startsWith("/cacambas")) return "Caçambas"
+  if (pathname === "/clientes/novo") return "Novo Cliente"
+  if (pathname.startsWith("/clientes/editar/")) return "Editar Cliente"
+  if (pathname.startsWith("/clientes")) return "Clientes"
+  if (pathname === "/perfil") return "Meu Perfil"
+  return "Cacambix"
+}
+
 export default function Sidebar() {
   const { user, setUser } = React.useContext(AuthContext)
   const location = useLocation()
@@ -49,10 +62,18 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Botão Hamburger Mobile */}
-      <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
-        <FontAwesomeIcon icon={faBars} />
-      </button>
+      {/* Barra de navegação mobile */}
+      <div className="mobile-menu-bar">
+        <button
+          className="mobile-menu-toggle"
+          onClick={toggleMobileMenu}
+          aria-label="Abrir menu lateral"
+          aria-expanded={isMobileMenuOpen}
+        >
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+        <span className="mobile-menu-title">{getMobilePageTitle(location.pathname)}</span>
+      </div>
 
       {/* Overlay/Backdrop */}
       {isMobileMenuOpen && (

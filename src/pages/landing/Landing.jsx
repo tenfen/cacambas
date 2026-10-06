@@ -192,10 +192,13 @@ export function Landing({ onLogin, onRegister }) {
       </section>
 
       <footer className="landing-footer">
-        <img src={Logo} alt="Logomarca" className="landing-logo landing-logo-footer" />
-        <button type="button" className="landing-footer-login" onClick={onLogin}>
-          Entrar
-        </button>
+        <p className="landing-footer-rights">
+          Cacambix - Todos os direitos reservados
+        </p>
+        <nav className="landing-footer-links" aria-label="Documentos legais">
+          <a href="/termos">Termos de Uso</a>
+          <a href="/privacidade">Política de Privacidade</a>
+        </nav>
       </footer>
     </main>
   );
