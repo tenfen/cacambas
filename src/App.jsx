@@ -123,6 +123,7 @@ function App() {
     email_user: returnUser.userEmail,
     userId: returnUser.userId,
     userRole: returnUser.userRole,
+    createdAt: returnUser.createdAt || returnUser.created_at,
     userAddressId: returnUser.userAddressId,
     userImage: returnUser.userImage,
     twoFactorEnabled: returnUser.twoFactorEnabled,
