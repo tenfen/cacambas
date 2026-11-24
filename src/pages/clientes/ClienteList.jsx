@@ -10,7 +10,6 @@ import ConfirmModal from "modals/Confirm/ConfirmModal";
 
 import { formatDia, formatMomento } from "helpers/date-utils";
 import ClienteController from "../../controllers/ClienteController";
-import CacambaController from "../../controllers/CacambaController";
 import AuthContext from "contexts/AuthContext";
 import LoadingContext from "../../contexts/LoadingContext";
 
@@ -24,14 +23,12 @@ export default function ClienteList() {
   const userId = user?.userLogged?.userId;
 
   const [clientes, setClientes] = useState([]);
-  const [cacambasPorId, setCacambasPorId] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [toDelete, setToDelete] = useState(null);
   const [toRecolher, setToRecolher] = useState(null);
 
   useEffect(() => {
     loadClientes();
-    loadCacambas();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
@@ -49,23 +46,6 @@ export default function ClienteList() {
       alert.error("Erro ao carregar clientes");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const loadCacambas = async () => {
-    if (!userId) return;
-
-    try {
-      const response = await CacambaController.getAll(userId);
-      if (response.status === 200) {
-        const mapa = {};
-        (response.content || []).forEach((cacamba) => {
-          mapa[cacamba.bucketId] = cacamba;
-        });
-        setCacambasPorId(mapa);
-      }
-    } catch (error) {
-      console.error("Erro ao carregar caçambas:", error);
     }
   };
 
@@ -95,25 +75,19 @@ export default function ClienteList() {
 
     setLoading(true);
     try {
-      const response = await ClienteController.recolher(toRecolher.clienteId, userId);
+      const response = toRecolher.locacao
+        ? await ClienteController.recolherLocacao(toRecolher.clienteId, toRecolher.locacao._id)
+        : await ClienteController.recolher(toRecolher.clienteId, userId);
 
       if (response.status === 200) {
         alert.success("Caçamba liberada — já pode ser alocada a outro cliente.");
-        setClientes(
-          clientes.map((c) =>
-            c.clienteId === toRecolher.clienteId
-              ? {
-                  ...c,
-                  bucketId: null,
-                  clienteActive: false,
-                  clienteDataEntrada: null,
-                  clienteDataSaida: null,
-                }
-              : c
+        setClientes((lista) =>
+          lista.map((c) =>
+            c.clienteId === toRecolher.clienteId ? { ...c, ...response.cliente } : c
           )
         );
       } else {
-        alert.error("Erro ao marcar caçamba como recolhida");
+        alert.error(response.message || "Erro ao marcar caçamba como recolhida");
       }
     } catch (error) {
       console.error("Erro ao marcar caçamba como recolhida:", error);
@@ -123,6 +97,15 @@ export default function ClienteList() {
       setToRecolher(null);
     }
   };
+
+  const abertasDe = (cliente) =>
+    [...(cliente.locacoesAbertas || [])].sort(
+      (a, b) =>
+        new Date(a.dataPrevista || "9999-12-31") - new Date(b.dataPrevista || "9999-12-31")
+    );
+
+  const nomeDaCacamba = (locacao) =>
+    `${locacao.bucketName || "Caçamba"}${locacao.bucketNumber ? ` (${locacao.bucketNumber})` : ""}`;
 
   const rotaUrl = (cliente) => {
     if (cliente.clienteLatitude && cliente.clienteLongitude) {
@@ -161,10 +144,13 @@ export default function ClienteList() {
         return a.clienteActive ? -1 : 1;
       }
 
-      if (!a.clienteDataSaida && !b.clienteDataSaida) return 0;
-      if (!a.clienteDataSaida) return 1;
-      if (!b.clienteDataSaida) return -1;
-      return new Date(a.clienteDataSaida) - new Date(b.clienteDataSaida);
+      const proximaA = abertasDe(a)[0]?.dataPrevista;
+      const proximaB = abertasDe(b)[0]?.dataPrevista;
+
+      if (!proximaA && !proximaB) return 0;
+      if (!proximaA) return 1;
+      if (!proximaB) return -1;
+      return new Date(proximaA) - new Date(proximaB);
     });
 
   return (
@@ -218,19 +204,29 @@ export default function ClienteList() {
                   <td>{cliente.clienteDocumento || "-"}</td>
                   <td>{cliente.clienteAddressCity || "-"}</td>
                   <td>
-                    {cliente.bucketId && cacambasPorId[cliente.bucketId]
-                      ? `${cacambasPorId[cliente.bucketId].bucketName}${
-                          cacambasPorId[cliente.bucketId].bucketNumber
-                            ? ` (${cacambasPorId[cliente.bucketId].bucketNumber})`
-                            : ""
-                        }`
-                      : "-"}
+                    {abertasDe(cliente).map((locacao) => (
+                      <div className="locacao-item" key={locacao._id}>
+                        <button
+                          className="locacao-recolher"
+                          onClick={() => setToRecolher({ ...cliente, locacao })}
+                          title={`Marcar ${nomeDaCacamba(locacao)} como recolhida`}
+                          aria-label={`Marcar ${nomeDaCacamba(locacao)} como recolhida`}
+                        >
+                          <FontAwesomeIcon icon={faCheckCircle} />
+                        </button>
+                        {nomeDaCacamba(locacao)}
+                      </div>
+                    ))}
+                    {!abertasDe(cliente).length && "-"}
                   </td>
                   <td>
+                    {abertasDe(cliente).map((locacao) => (
+                      <div className="locacao-item" key={locacao._id}>
+                        {formatDia(locacao.dataPrevista)}
+                      </div>
+                    ))}
                     {/* Sem caçamba, é o momento do recolhimento (formato antigo). */}
-                    {cliente.bucketId
-                      ? formatDia(cliente.clienteDataSaida)
-                      : formatMomento(cliente.clienteDataSaida)}
+                    {!abertasDe(cliente).length && formatMomento(cliente.clienteDataSaida)}
                   </td>
                   <td className="center-text">
                     <span className={`badge ${cliente.clienteActive ? "badge-active" : "badge-inactive"}`}>
@@ -250,7 +246,8 @@ export default function ClienteList() {
                           <FontAwesomeIcon icon={faRoute} />
                         </a>
                       )}
-                      {cliente.bucketId && (
+                      {/* Caçamba duplicada no formato antigo, sem locação própria. */}
+                      {cliente.temVinculoAntigo && !abertasDe(cliente).length && (
                         <button
                           className="action-btn action-recolher"
                           onClick={() => setToRecolher(cliente)}
@@ -295,7 +292,9 @@ export default function ClienteList() {
         variant="confirm"
         confirmLabel="Confirmar"
         title="Marcar como recolhida"
-        content={`Confirma que a caçamba de "${toRecolher?.clienteNome}" já foi recolhida? Ela ficará disponível para ser alocada a outro cliente.`}
+        content={`Confirma que a caçamba ${
+          toRecolher?.locacao ? `"${nomeDaCacamba(toRecolher.locacao)}" ` : ""
+        }de "${toRecolher?.clienteNome}" já foi recolhida? Ela ficará disponível para ser alocada a outro cliente.`}
         onConfirm={handleMarcarRecolhida}
         onCancel={() => setToRecolher(null)}
       />

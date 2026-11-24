@@ -21,6 +21,14 @@ const ClienteController = {
     return API.request(`/cliente/${clienteId}`, {}, "DELETE");
   },
 
+  recolherLocacao: (clienteId, locacaoId) => {
+    return API.request(`/cliente/${clienteId}/locacoes/${locacaoId}/recolher`, {}, "PUT");
+  },
+
+  cancelarLocacao: (clienteId, locacaoId) => {
+    return API.request(`/cliente/${clienteId}/locacoes/${locacaoId}/cancelar`, {}, "PUT");
+  },
+
   recolher: (clienteId, userId) => {
     return API.request(`/cliente/${clienteId}/recolher`, { userId }, "PUT");
   },

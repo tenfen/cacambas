@@ -62,6 +62,52 @@
       }
     }
 
+    .locacao-linha {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 1rem;
+      border: 1px solid #dfe3e8;
+      border-radius: 8px;
+    }
+
+    .locacao-topo {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .locacao-acoes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .locacao-btn {
+      align-self: flex-start;
+      padding: 0.5rem 0.85rem;
+      border: 1px solid #dfe3e8;
+      border-radius: 6px;
+      background: white;
+      color: #2c3e50;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .locacao-btn-recolher {
+      background: #d4edda;
+      border-color: #d4edda;
+      color: #155724;
+    }
+
+    .locacao-btn-adicionar {
+      border-color: #342b78;
+      color: #342b78;
+    }
+
     .locacoes-wrapper {
       overflow-x: auto;
     }

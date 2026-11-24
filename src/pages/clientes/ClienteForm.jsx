@@ -2,12 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAlert } from "react-alert";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAddressBook, faArrowLeft, faSave, faMapMarkerAlt, faDumpster } from "@fortawesome/free-solid-svg-icons";
+import { faAddressBook, faArrowLeft, faSave, faMapMarkerAlt, faDumpster, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import Button from "components/button/Button";
 import { Input } from "components/input/Input";
 
 import { formatDia, formatMomento } from "helpers/date-utils";
+import ConfirmModal from "modals/Confirm/ConfirmModal";
+
 import ClienteController from "../../controllers/ClienteController";
 import CacambaController from "../../controllers/CacambaController";
 import AuthContext from "contexts/AuthContext";
@@ -26,6 +28,12 @@ const LOCACAO_STATUS = {
   cancelada: "Cancelada",
 };
 
+let proximaChave = 1;
+
+function novaLinha() {
+  return { chave: `nova-${proximaChave++}`, bucketId: "", dataEntrada: "", dataPrevista: "" };
+}
+
 const initialState = {
   clienteNome: "",
   clienteTelefone: "",
@@ -41,9 +49,6 @@ const initialState = {
   clienteAddressReference: "",
   clienteActive: true,
   clienteNotes: "",
-  bucketId: "",
-  clienteDataEntrada: "",
-  clienteDataSaida: "",
 };
 
 export default function ClienteForm() {
@@ -57,6 +62,10 @@ export default function ClienteForm() {
   const [formData, setFormData] = useState(initialState);
   const [coordenadas, setCoordenadas] = useState({ latitude: null, longitude: null });
   const [locacoes, setLocacoes] = useState([]);
+  // Aluguéis em andamento (datas editáveis) e linhas novas do formulário.
+  const [emAndamento, setEmAndamento] = useState([]);
+  const [novas, setNovas] = useState(isEdit ? [] : [novaLinha()]);
+  const [confirmacao, setConfirmacao] = useState(null);
   const [cacambasDisponiveis, setCacambasDisponiveis] = useState([]);
 
   const userId = user?.userLogged?.userId;
@@ -75,25 +84,13 @@ export default function ClienteForm() {
     if (!userId) return;
 
     try {
-      const [cacambasRes, clientesRes] = await Promise.all([
-        CacambaController.getAll(userId),
-        ClienteController.getAll(userId),
-      ]);
+      const response = await CacambaController.getAll(userId);
 
-      const todasCacambas = cacambasRes.status === 200 ? cacambasRes.content || [] : [];
-      const todosClientes = clientesRes.status === 200 ? clientesRes.content || [] : [];
-
-      /*
-       * Uma caçamba já alocada em OUTRO cliente não entra na lista —
-       * mas a que já está com este cliente (em edição) continua aparecendo.
-       */
-      const idsOcupados = todosClientes
-        .filter((c) => String(c.clienteId) !== String(id) && c.bucketId)
-        .map((c) => c.bucketId);
-
-      setCacambasDisponiveis(
-        todasCacambas.filter((b) => !idsOcupados.includes(b.bucketId))
-      );
+      if (response.status === 200) {
+        setCacambasDisponiveis(
+          (response.content || []).filter((b) => b.bucketStatus === "disponivel")
+        );
+      }
     } catch (error) {
       console.error("Erro ao carregar caçambas disponíveis:", error);
     }
@@ -102,7 +99,23 @@ export default function ClienteForm() {
   const loadLocacoes = async () => {
     const response = await ClienteController.getLocacoes(id);
     if (response.status === 200) {
-      setLocacoes(response.content || []);
+      const lista = response.content || [];
+      setLocacoes(lista);
+
+      // Mantém datas já digitadas e ainda não salvas.
+      setEmAndamento((atuais) =>
+        lista
+          .filter((l) => l.status === "aberta")
+          .map(
+            (l) =>
+              atuais.find((a) => a._id === l._id) || {
+                _id: l._id,
+                nome: `${l.bucketName || "Caçamba"}${l.bucketNumber ? ` (${l.bucketNumber})` : ""}`,
+                dataEntrada: toDateInputValue(l.dataEntrada),
+                dataPrevista: toDateInputValue(l.dataPrevista),
+              }
+          )
+      );
     }
   };
 
@@ -127,10 +140,6 @@ export default function ClienteForm() {
           clienteAddressReference: c.clienteAddressReference || "",
           clienteActive: c.clienteActive !== false,
           clienteNotes: c.clienteNotes || "",
-          bucketId: c.bucketId ?? "",
-          // Sem caçamba, as datas são de um aluguel já encerrado.
-          clienteDataEntrada: c.bucketId ? toDateInputValue(c.clienteDataEntrada) : "",
-          clienteDataSaida: c.bucketId ? toDateInputValue(c.clienteDataSaida) : "",
         });
         setCoordenadas({
           latitude: c.clienteLatitude ?? null,
@@ -150,6 +159,41 @@ export default function ClienteForm() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const alterarAndamento = (_id, field, value) => {
+    setEmAndamento((lista) => lista.map((l) => (l._id === _id ? { ...l, [field]: value } : l)));
+  };
+
+  const alterarNova = (chave, field, value) => {
+    setNovas((lista) => lista.map((l) => (l.chave === chave ? { ...l, [field]: value } : l)));
+  };
+
+  const confirmarAcao = async () => {
+    const { acao, locacao } = confirmacao;
+    setConfirmacao(null);
+    setLoading(true);
+
+    try {
+      const response =
+        acao === "recolher"
+          ? await ClienteController.recolherLocacao(id, locacao._id)
+          : await ClienteController.cancelarLocacao(id, locacao._id);
+
+      if (response.status === 200) {
+        alert.success(acao === "recolher" ? "Caçamba recolhida!" : "Aluguel cancelado.");
+
+        if (response.cliente) {
+          handleChange("clienteActive", response.cliente.clienteActive);
+        }
+      } else {
+        alert.error(response.message || "Erro ao atualizar o aluguel");
+      }
+
+      await Promise.all([loadLocacoes(), loadCacambasDisponiveis()]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -158,13 +202,30 @@ export default function ClienteForm() {
       return;
     }
 
+    // Linha com data e sem caçamba é esquecimento; toda vazia é ignorada.
+    if (novas.some((l) => !l.bucketId && (l.dataEntrada || l.dataPrevista))) {
+      alert.error("Selecione a caçamba do novo aluguel");
+      return;
+    }
+
     setLoading(true);
     try {
       const dataToSend = {
         ...formData,
-        bucketId: formData.bucketId === "" ? null : Number(formData.bucketId),
-        clienteDataEntrada: formData.clienteDataEntrada || null,
-        clienteDataSaida: formData.clienteDataSaida || null,
+        locacoes: [
+          ...emAndamento.map(({ _id, dataEntrada, dataPrevista }) => ({
+            _id,
+            dataEntrada: dataEntrada || null,
+            dataPrevista: dataPrevista || null,
+          })),
+          ...novas
+            .filter((l) => l.bucketId)
+            .map(({ bucketId, dataEntrada, dataPrevista }) => ({
+              bucketId: Number(bucketId),
+              dataEntrada: dataEntrada || null,
+              dataPrevista: dataPrevista || null,
+            })),
+        ],
         userId: user?.userLogged?.userId,
       };
 
@@ -359,43 +420,107 @@ export default function ClienteForm() {
 
         <div className="form-card">
           <div className="card-title">
-            <FontAwesomeIcon icon={faDumpster} /> Caçamba Alocada
+            <FontAwesomeIcon icon={faDumpster} /> Caçambas com este cliente
           </div>
 
-          <fieldset className="input-standard">
-            <label>Caçamba:</label>
-            <select
-              value={formData.bucketId}
-              onChange={(e) => handleChange("bucketId", e.target.value)}
-            >
-              <option value="">Nenhuma</option>
-              {cacambasDisponiveis.map((cacamba) => (
-                <option key={cacamba.bucketId} value={cacamba.bucketId}>
-                  {cacamba.bucketName}
-                  {cacamba.bucketNumber ? ` (${cacamba.bucketNumber})` : ""}
-                </option>
-              ))}
-            </select>
-            <span className="field-hint">
-              Só aparecem aqui as caçambas que não estão com outro cliente.
-            </span>
-          </fieldset>
+          {emAndamento.map((locacao) => (
+            <div className="locacao-linha" key={locacao._id}>
+              <div className="locacao-topo">
+                <strong>{locacao.nome}</strong>
+                <div className="locacao-acoes">
+                  <button
+                    type="button"
+                    className="locacao-btn locacao-btn-recolher"
+                    onClick={() => setConfirmacao({ acao: "recolher", locacao })}
+                  >
+                    Recolhida
+                  </button>
+                  <button
+                    type="button"
+                    className="locacao-btn"
+                    onClick={() => setConfirmacao({ acao: "cancelar", locacao })}
+                  >
+                    Cancelar aluguel
+                  </button>
+                </div>
+              </div>
 
-          <div className="form-row">
-            <Input
-              title="Data de entrada"
-              type="date"
-              value={formData.clienteDataEntrada}
-              onChange={(e) => handleChange("clienteDataEntrada", e.target.value)}
-            />
+              <div className="form-row">
+                <Input
+                  title="Data de entrada"
+                  type="date"
+                  value={locacao.dataEntrada}
+                  onChange={(e) => alterarAndamento(locacao._id, "dataEntrada", e.target.value)}
+                />
+                <Input
+                  title="Retirada prevista"
+                  type="date"
+                  value={locacao.dataPrevista}
+                  onChange={(e) => alterarAndamento(locacao._id, "dataPrevista", e.target.value)}
+                />
+              </div>
+            </div>
+          ))}
 
-            <Input
-              title="Data de saída (retirada)"
-              type="date"
-              value={formData.clienteDataSaida}
-              onChange={(e) => handleChange("clienteDataSaida", e.target.value)}
-            />
-          </div>
+          {novas.map((linha) => (
+            <div className="locacao-linha" key={linha.chave}>
+              <fieldset className="input-standard">
+                <label htmlFor={linha.chave}>Nova caçamba:</label>
+                <select
+                  id={linha.chave}
+                  value={linha.bucketId}
+                  onChange={(e) => alterarNova(linha.chave, "bucketId", e.target.value)}
+                >
+                  <option value="">Nenhuma</option>
+                  {cacambasDisponiveis
+                    .filter(
+                      (b) =>
+                        !novas.some(
+                          (l) => l.chave !== linha.chave && l.bucketId === String(b.bucketId)
+                        )
+                    )
+                    .map((cacamba) => (
+                      <option key={cacamba.bucketId} value={cacamba.bucketId}>
+                        {cacamba.bucketName}
+                        {cacamba.bucketNumber ? ` (${cacamba.bucketNumber})` : ""}
+                      </option>
+                    ))}
+                </select>
+                <span className="field-hint">Só aparecem as caçambas disponíveis.</span>
+              </fieldset>
+
+              <div className="form-row">
+                <Input
+                  title="Data de entrada"
+                  type="date"
+                  value={linha.dataEntrada}
+                  onChange={(e) => alterarNova(linha.chave, "dataEntrada", e.target.value)}
+                />
+                <Input
+                  title="Retirada prevista"
+                  type="date"
+                  value={linha.dataPrevista}
+                  onChange={(e) => alterarNova(linha.chave, "dataPrevista", e.target.value)}
+                />
+              </div>
+
+              <button
+                type="button"
+                className="locacao-btn"
+                onClick={() => setNovas((lista) => lista.filter((l) => l.chave !== linha.chave))}
+              >
+                Remover linha
+              </button>
+            </div>
+          ))}
+
+          <button
+            type="button"
+            className="locacao-btn locacao-btn-adicionar"
+            onClick={() => setNovas((lista) => [...lista, novaLinha()])}
+          >
+            <FontAwesomeIcon icon={faPlus} /> Adicionar caçamba
+          </button>
         </div>
 
         {locacoes.length > 0 && (
@@ -458,6 +583,20 @@ export default function ClienteForm() {
           </Button>
         </div>
       </form>
+
+      <ConfirmModal
+        isOpen={!!confirmacao}
+        variant={confirmacao?.acao === "recolher" ? "confirm" : undefined}
+        confirmLabel="Confirmar"
+        title={confirmacao?.acao === "recolher" ? "Marcar como recolhida" : "Cancelar aluguel"}
+        content={
+          confirmacao?.acao === "recolher"
+            ? `Confirma que "${confirmacao?.locacao.nome}" já foi recolhida? O valor entra na receita.`
+            : `Cancelar o aluguel de "${confirmacao?.locacao.nome}"? Ele não entra na receita.`
+        }
+        onConfirm={confirmarAcao}
+        onCancel={() => setConfirmacao(null)}
+      />
     </section>
   );
 }
