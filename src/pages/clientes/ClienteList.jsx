@@ -8,6 +8,7 @@ import Button from "components/button/Button";
 import Search from "components/search/Search";
 import ConfirmModal from "modals/Confirm/ConfirmModal";
 
+import { formatDia, formatMomento } from "helpers/date-utils";
 import ClienteController from "../../controllers/ClienteController";
 import CacambaController from "../../controllers/CacambaController";
 import AuthContext from "contexts/AuthContext";
@@ -78,7 +79,7 @@ export default function ClienteList() {
         alert.success("Cliente excluído com sucesso!");
         setClientes(clientes.filter((c) => c.clienteId !== toDelete.clienteId));
       } else {
-        alert.error("Erro ao excluir cliente");
+        alert.error(response.message || "Erro ao excluir cliente");
       }
     } catch (error) {
       console.error("Erro ao excluir cliente:", error);
@@ -101,7 +102,13 @@ export default function ClienteList() {
         setClientes(
           clientes.map((c) =>
             c.clienteId === toRecolher.clienteId
-              ? { ...c, bucketId: null, clienteActive: false }
+              ? {
+                  ...c,
+                  bucketId: null,
+                  clienteActive: false,
+                  clienteDataEntrada: null,
+                  clienteDataSaida: null,
+                }
               : c
           )
         );
@@ -115,11 +122,6 @@ export default function ClienteList() {
       setLoading(false);
       setToRecolher(null);
     }
-  };
-
-  const formatData = (data) => {
-    if (!data) return "-";
-    return new Date(data).toLocaleDateString("pt-BR");
   };
 
   const rotaUrl = (cliente) => {
@@ -224,7 +226,12 @@ export default function ClienteList() {
                         }`
                       : "-"}
                   </td>
-                  <td>{formatData(cliente.clienteDataSaida)}</td>
+                  <td>
+                    {/* Sem caçamba, é o momento do recolhimento (formato antigo). */}
+                    {cliente.bucketId
+                      ? formatDia(cliente.clienteDataSaida)
+                      : formatMomento(cliente.clienteDataSaida)}
+                  </td>
                   <td className="center-text">
                     <span className={`badge ${cliente.clienteActive ? "badge-active" : "badge-inactive"}`}>
                       {cliente.clienteActive ? "Ativo" : "Inativo"}

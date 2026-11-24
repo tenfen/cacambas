@@ -63,7 +63,7 @@ export default function CacambaList() {
         alert.success("Caçamba excluída com sucesso!");
         setCacambas(cacambas.filter((c) => c.bucketId !== toDelete.bucketId));
       } else {
-        alert.error("Erro ao excluir caçamba");
+        alert.error(response.message || "Erro ao excluir caçamba");
       }
     } catch (error) {
       console.error("Erro ao excluir caçamba:", error);

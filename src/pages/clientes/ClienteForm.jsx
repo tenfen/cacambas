@@ -7,6 +7,7 @@ import { faAddressBook, faArrowLeft, faSave, faMapMarkerAlt, faDumpster } from "
 import Button from "components/button/Button";
 import { Input } from "components/input/Input";
 
+import { formatDia, formatMomento } from "helpers/date-utils";
 import ClienteController from "../../controllers/ClienteController";
 import CacambaController from "../../controllers/CacambaController";
 import AuthContext from "contexts/AuthContext";
@@ -18,6 +19,12 @@ function toDateInputValue(date) {
   if (!date) return "";
   return new Date(date).toISOString().slice(0, 10);
 }
+
+const LOCACAO_STATUS = {
+  aberta: "Em andamento",
+  concluida: "Concluída",
+  cancelada: "Cancelada",
+};
 
 const initialState = {
   clienteNome: "",
@@ -49,6 +56,7 @@ export default function ClienteForm() {
 
   const [formData, setFormData] = useState(initialState);
   const [coordenadas, setCoordenadas] = useState({ latitude: null, longitude: null });
+  const [locacoes, setLocacoes] = useState([]);
   const [cacambasDisponiveis, setCacambasDisponiveis] = useState([]);
 
   const userId = user?.userLogged?.userId;
@@ -58,6 +66,7 @@ export default function ClienteForm() {
 
     if (isEdit) {
       loadCliente();
+      loadLocacoes();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
@@ -90,6 +99,13 @@ export default function ClienteForm() {
     }
   };
 
+  const loadLocacoes = async () => {
+    const response = await ClienteController.getLocacoes(id);
+    if (response.status === 200) {
+      setLocacoes(response.content || []);
+    }
+  };
+
   const loadCliente = async () => {
     setLoading(true);
     try {
@@ -112,8 +128,9 @@ export default function ClienteForm() {
           clienteActive: c.clienteActive !== false,
           clienteNotes: c.clienteNotes || "",
           bucketId: c.bucketId ?? "",
-          clienteDataEntrada: toDateInputValue(c.clienteDataEntrada),
-          clienteDataSaida: toDateInputValue(c.clienteDataSaida),
+          // Sem caçamba, as datas são de um aluguel já encerrado.
+          clienteDataEntrada: c.bucketId ? toDateInputValue(c.clienteDataEntrada) : "",
+          clienteDataSaida: c.bucketId ? toDateInputValue(c.clienteDataSaida) : "",
         });
         setCoordenadas({
           latitude: c.clienteLatitude ?? null,
@@ -380,6 +397,48 @@ export default function ClienteForm() {
             />
           </div>
         </div>
+
+        {locacoes.length > 0 && (
+          <div className="form-card">
+            <div className="card-title">Aluguéis deste cliente</div>
+
+            <div className="locacoes-wrapper">
+              <table className="locacoes-table">
+                <thead>
+                  <tr>
+                    <th>Caçamba</th>
+                    <th>Entrada</th>
+                    <th>Retirada</th>
+                    <th>Valor</th>
+                    <th>Situação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {locacoes.map((locacao) => (
+                    <tr key={locacao._id}>
+                      <td>
+                        {locacao.bucketName || "-"}
+                        {locacao.bucketNumber ? ` (${locacao.bucketNumber})` : ""}
+                      </td>
+                      <td>{formatDia(locacao.dataEntrada)}</td>
+                      <td>
+                        {locacao.status === "concluida"
+                          ? formatMomento(locacao.dataRecolhimento)
+                          : formatDia(locacao.dataPrevista)}
+                      </td>
+                      <td>
+                        {locacao.valor != null
+                          ? `R$ ${Number(locacao.valor).toFixed(2).replace(".", ",")}`
+                          : "-"}
+                      </td>
+                      <td>{LOCACAO_STATUS[locacao.status] || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
         <div className="form-card">
           <div className="card-title">Observações</div>

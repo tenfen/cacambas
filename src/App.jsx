@@ -32,6 +32,7 @@ import MessageContext from "./contexts/MessageContext";
 // Helpers
 import {
   getSessionItem,
+  removeSessionItem,
   setSessionItem,
 } from "./helpers/StorageTools";
 import { normalizarPapel } from "./helpers/role";
@@ -68,8 +69,9 @@ function App() {
 
   /*
    * user representa uma sessão autenticada.
-   * pendingUser representa um usuário recém-cadastrado,
-   * ainda não autenticado e aguardando pagamento.
+   * pendingUser representa um usuário que fez login, mas está sem
+   * acesso ao painel até pagar. Tem token (a API exige para criar a
+   * cobrança), mas não tem sessão "user".
    */
   const [user, setUser] = useState(null);
   const [pendingUser, setPendingUser] = useState(null);
@@ -112,8 +114,30 @@ function App() {
          */
         setUser({ userLogged: userSession });
       }
+
+      return;
+    }
+
+    /*
+     * Pagamento em andamento: recupera a tela de assinatura depois de
+     * recarregar a página ou de voltar do Mercado Pago na mesma aba.
+     */
+    const pendingSession = getSessionItem("pendingUser", true);
+
+    if (pendingSession && getSessionItem("authToken")) {
+      setPendingUser(pendingSession);
+      setShowSubscription(true);
     }
   }, []);
+
+  const clearPendingUser = () => {
+    if (getSessionItem("pendingUser")) {
+      removeSessionItem("pendingUser");
+      removeSessionItem("authToken");
+    }
+
+    setPendingUser(null);
+  };
 
   const buildUserLoggedFromUser = (returnUser) => ({
     login_user: `${returnUser.userEmail}`.trim(),
@@ -137,9 +161,6 @@ function App() {
   });
 
   const onSignIn = async ({ userEmail, userPass }) => {
-    console.log("userEmail-----", userEmail);
-    console.log("userPass-----", userPass);
-
     try {
       if (!userEmail) {
         return onMessage("Informação", "Usuário não informado!");
@@ -153,8 +174,6 @@ function App() {
         userEmail,
         userPass,
       });
-
-      console.log("🔍 DEBUG LOGIN - Resposta completa:", res);
 
       if (res.status !== 200) {
         return onMessage(
@@ -173,9 +192,6 @@ function App() {
       }
 
       const usernameRefactored = `${returnUser.userEmail}`.trim();
-
-      console.log("🔍 DEBUG LOGIN - returnUser:", returnUser);
-      console.log("🔍 DEBUG LOGIN - userRole:", returnUser.userRole);
 
       if (usernameRefactored !== userEmail) {
         return onMessage(
@@ -203,7 +219,14 @@ function App() {
          * "active" significa que ainda não foi pago.
          */
         if (!["active", "trial"].includes(returnUser.accountStatus)) {
-          setPendingUser(returnUser);
+          if (res.content?.token) {
+            setSessionItem("authToken", res.content.token, true);
+          }
+
+          const pending = { userId: returnUser.userId };
+
+          setSessionItem("pendingUser", pending, true);
+          setPendingUser(pending);
           setShowSubscription(true);
 
           return onMessage(
@@ -219,8 +242,6 @@ function App() {
       }
 
       const userLogged = buildUserLoggedFromUser(returnUser);
-
-      console.log("🔍 DEBUG LOGIN - userLogged criado:", userLogged);
 
       setUser({ userLogged });
       setSessionItem("user", userLogged, true);
@@ -286,7 +307,7 @@ function App() {
     setShowSubscription(false);
     setShowForgotPassword(false);
     setShowLogin(true);
-    setPendingUser(null);
+    clearPendingUser();
   };
 
   const onBackToHome = () => {
@@ -294,7 +315,7 @@ function App() {
     setShowSubscription(false);
     setShowForgotPassword(false);
     setShowLogin(false);
-    setPendingUser(null);
+    clearPendingUser();
   };
 
   /*
@@ -322,18 +343,14 @@ function App() {
   };
 
   /*
-   * Após pagamento aprovado, a tela de assinatura pode
-   * redirecionar para o login.
+   * Conta ativada pelo pagamento: o token do login continua valendo,
+   * então entra direto no painel.
    */
-  const onPaymentFinished = () => {
-    setPendingUser(null);
-    setShowSubscription(false);
-    setShowRegister(false);
+  const onPaymentFinished = (activeUser) => {
+    removeSessionItem("pendingUser");
+    setSessionItem("user", buildUserLoggedFromUser(activeUser), true);
 
-    onMessage(
-      "Pagamento realizado",
-      "Pagamento recebido. Sua conta será ativada após a confirmação."
-    );
+    window.location.href = "/";
   };
 
   return (

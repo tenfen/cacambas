@@ -11,7 +11,6 @@ import PaymentController from "../../controllers/PaymentController";
 import AuthContext from "contexts/AuthContext";
 import LoadingContext from "../../contexts/LoadingContext";
 import { setSessionItem } from "../../helpers/StorageTools";
-import { isPaymentApproved } from "../../helpers/payment";
 
 import "./PerfilUsuario.scss";
 
@@ -42,6 +41,11 @@ const PAYMENT_METHOD_LABELS = {
 function formatData(data) {
   if (!data) return "-";
   return new Date(data).toLocaleDateString("pt-BR");
+}
+
+function formatDataHora(data) {
+  if (!data) return "-";
+  return new Date(data).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
 }
 
 function formatPaymentMethod(method) {
@@ -82,6 +86,9 @@ export default function PerfilUsuario() {
 
   const pollTimerRef = useRef(null);
   const pollDeadlineRef = useRef(null);
+  // Vencimento antes de renovar: se avançar, o pagamento foi confirmado.
+  const previousPeriodEndRef = useRef(null);
+  const mountedRef = useRef(false);
 
   const stopPolling = () => {
     if (pollTimerRef.current) {
@@ -91,9 +98,13 @@ export default function PerfilUsuario() {
   };
 
   useEffect(() => {
+    mountedRef.current = true;
     loadAssinatura();
 
-    return () => stopPolling();
+    return () => {
+      mountedRef.current = false;
+      stopPolling();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -106,6 +117,11 @@ export default function PerfilUsuario() {
       const userResponse = await UserController.getUserById(userLogged.userId);
       if (userResponse.status === 200) {
         setSubscriptionInfo(userResponse.content);
+
+        // Referência inicial, para o botão "Já paguei" desta página.
+        if (!pollTimerRef.current) {
+          previousPeriodEndRef.current = userResponse.content?.currentPeriodEnd;
+        }
       }
     } catch (error) {
       console.error("Erro ao carregar dados da assinatura:", error);
@@ -136,9 +152,18 @@ export default function PerfilUsuario() {
     }
 
     try {
-      const response = await PaymentController.getPaymentStatus(userLogged.userId);
+      const response = await UserController.getUserById(userLogged.userId);
 
-      if (response.status === 200 && isPaymentApproved(response.content)) {
+      if (!mountedRef.current) return false;
+
+      const periodEnd = response.content?.currentPeriodEnd;
+
+      if (
+        response.status === 200 &&
+        response.content?.accountStatus === "active" &&
+        periodEnd &&
+        new Date(periodEnd) > new Date(previousPeriodEndRef.current || 0)
+      ) {
         stopPolling();
         setRenewWaiting(false);
         alert.success("Pagamento confirmado! Assinatura renovada.");
@@ -187,10 +212,22 @@ export default function PerfilUsuario() {
   };
 
   const handleRenew = async () => {
-    if (!userLogged.userId) return;
+    if (!userLogged.userId || !subscriptionInfo) return;
 
     setRenewLoading(true);
     setRenewError("");
+
+    /*
+     * Abre a aba ainda dentro do clique, senão o navegador pode bloquear.
+     * Sem "noopener": com ele window.open sempre devolve null.
+     */
+    const checkoutWindow = window.open("", "_blank");
+
+    if (checkoutWindow) {
+      checkoutWindow.opener = null;
+    }
+
+    previousPeriodEndRef.current = subscriptionInfo.currentPeriodEnd;
 
     try {
       const response = await PaymentController.createCheckout(userLogged.userId);
@@ -208,15 +245,19 @@ export default function PerfilUsuario() {
         throw new Error("O Mercado Pago não retornou a URL do checkout.");
       }
 
-      const checkoutWindow = window.open(checkoutUrl, "_blank", "noopener,noreferrer");
-
       if (!checkoutWindow) {
         window.location.href = checkoutUrl;
         return;
       }
 
+      checkoutWindow.location.replace(checkoutUrl);
+
       startPolling();
     } catch (error) {
+      if (checkoutWindow) {
+        checkoutWindow.close();
+      }
+
       console.error("Erro ao criar checkout de renovação:", error);
       setRenewError(error?.message || "Não foi possível iniciar o pagamento.");
     } finally {
@@ -279,6 +320,10 @@ export default function PerfilUsuario() {
     ? subscriptionInfo?.trialEndsAt
     : subscriptionInfo?.currentPeriodEnd;
   const diasRestantes = calcularDiasRestantes(dataReferencia);
+  const emTolerancia =
+    subscriptionInfo?.accountStatus === "active" &&
+    subscriptionInfo?.currentPeriodEnd &&
+    new Date(subscriptionInfo.currentPeriodEnd) <= new Date();
   const statusLabel = ACCOUNT_STATUS_LABELS[subscriptionInfo?.accountStatus] || "-";
 
   return (
@@ -336,6 +381,10 @@ export default function PerfilUsuario() {
                 <span className="subscription-value">
                   {diasRestantes === null
                     ? "-"
+                    : emTolerancia
+                    ? `Vencido. Pague até ${formatDataHora(subscriptionInfo.graceEndsAt)} para não perder o acesso`
+                    : diasRestantes === 0 && new Date(dataReferencia) > new Date()
+                    ? "Vence hoje"
                     : diasRestantes > 0
                     ? `${diasRestantes} dia${diasRestantes === 1 ? "" : "s"}`
                     : "Expirado"}
@@ -372,7 +421,7 @@ export default function PerfilUsuario() {
               )}
 
               <div className="subscription-renew-actions">
-                <Button type="button" onClick={handleRenew} disabled={renewLoading}>
+                <Button type="button" onClick={handleRenew} disabled={renewLoading || !subscriptionInfo}>
                   {renewLoading ? "Abrindo pagamento..." : "Renovar agora"}
                 </Button>
 

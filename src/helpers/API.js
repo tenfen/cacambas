@@ -1,5 +1,5 @@
 import axios from "axios"
-import { getSessionItem, removeSessionItem } from "./StorageTools"
+import { getSessionItem, removeSessionItem, setSessionItem } from "./StorageTools"
 
 const version = "/v1"
 
@@ -88,6 +88,21 @@ const API = {
             removeSessionItem("authToken")
             removeSessionItem("user")
             window.location.href = "/"
+          }
+
+          /*
+           * Teste ou mês pago venceu com o painel aberto: volta para a
+           * assinatura mantendo o token, necessário para pagar.
+           */
+          if (error.response.status === 402 && authToken) {
+            const session = getSessionItem("user", true)
+            const userId = session?.userLogged?.userId ?? session?.userId
+
+            if (userId) {
+              setSessionItem("pendingUser", { userId }, true)
+              removeSessionItem("user")
+              window.location.href = "/"
+            }
           }
 
           return {

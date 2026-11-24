@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Logo from "assets/images/logo.svg";
 import Button from "components/button/Button";
 import PaymentController from "../../controllers/PaymentController";
-import { isPaymentApproved } from "../../helpers/payment";
+import UserController from "../../controllers/UserController";
 import "./subscription.scss";
 
 const POLL_INTERVAL_MS = 5000;
@@ -16,6 +16,7 @@ export default function Subscription({ user, onBack, onPaymentFinished }) {
 
   const pollTimerRef = useRef(null);
   const pollDeadlineRef = useRef(null);
+  const mountedRef = useRef(false);
 
   const stopPolling = () => {
     if (pollTimerRef.current) {
@@ -25,7 +26,22 @@ export default function Subscription({ user, onBack, onPaymentFinished }) {
   };
 
   useEffect(() => {
-    return () => stopPolling();
+    // Voltou do Mercado Pago na mesma aba: retoma a verificação.
+    const retorno = new URLSearchParams(window.location.search).get("payment");
+
+    if (retorno === "success" || retorno === "pending") {
+      checkPaymentStatus({ silent: true }).then((finished) => {
+        if (!finished && mountedRef.current) startPolling();
+      });
+    }
+
+    mountedRef.current = true;
+
+    return () => {
+      mountedRef.current = false;
+      stopPolling();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkPaymentStatus = async ({ silent } = {}) => {
@@ -39,14 +55,23 @@ export default function Subscription({ user, onBack, onPaymentFinished }) {
     }
 
     try {
-      const response = await PaymentController.getPaymentStatus(user.userId);
+      /*
+       * Consulta a conta, e não o último pagamento: um pagamento antigo
+       * aprovado não libera o acesso, e uma cobrança nova pendente não
+       * pode esconder outra que já foi paga.
+       */
+      const response = await UserController.getUserById(user.userId);
 
-      if (response.status === 200 && isPaymentApproved(response.content)) {
+      if (!mountedRef.current) {
+        return false;
+      }
+
+      if (response.status === 200 && response.content?.accountStatus === "active") {
         stopPolling();
         setWaitingPayment(false);
 
         if (onPaymentFinished) {
-          onPaymentFinished();
+          onPaymentFinished(response.content);
         }
 
         return true;
@@ -103,10 +128,18 @@ export default function Subscription({ user, onBack, onPaymentFinished }) {
     setLoading(true);
     setError("");
 
+    /*
+     * Abre a aba ainda dentro do clique, senão o navegador pode bloquear.
+     * Sem "noopener": com ele window.open sempre devolve null.
+     */
+    const checkoutWindow = window.open("", "_blank");
+
+    if (checkoutWindow) {
+      checkoutWindow.opener = null;
+    }
+
     try {
       const response = await PaymentController.createCheckout(user.userId);
-
-      console.log("Resposta do checkout:", response);
 
       if (response.status !== 200 && response.status !== 201) {
         throw new Error(
@@ -121,8 +154,6 @@ export default function Subscription({ user, onBack, onPaymentFinished }) {
         throw new Error("O Mercado Pago não retornou a URL do checkout.");
       }
 
-      const checkoutWindow = window.open(checkoutUrl, "_blank", "noopener,noreferrer");
-
       if (!checkoutWindow) {
         /*
          * Bloqueio de pop-up: navega na mesma aba como alternativa.
@@ -131,8 +162,14 @@ export default function Subscription({ user, onBack, onPaymentFinished }) {
         return;
       }
 
+      checkoutWindow.location.replace(checkoutUrl);
+
       startPolling();
     } catch (err) {
+      if (checkoutWindow) {
+        checkoutWindow.close();
+      }
+
       console.error("Erro ao criar checkout:", err);
       setError(err?.message || "Não foi possível iniciar o pagamento.");
     } finally {

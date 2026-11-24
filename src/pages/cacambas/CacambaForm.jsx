@@ -156,12 +156,16 @@ export default function CacambaForm() {
 
           <fieldset className="input-standard">
             <label>Status:</label>
+            {/* "Alugada" é definido sozinho ao vincular a um cliente. */}
             <select
               value={formData.bucketStatus}
+              disabled={formData.bucketStatus === "alugada"}
               onChange={(e) => handleChange("bucketStatus", e.target.value)}
             >
               <option value="disponivel">Disponível</option>
-              <option value="alugada">Alugada</option>
+              {formData.bucketStatus === "alugada" && (
+                <option value="alugada">Alugada</option>
+              )}
               <option value="manutencao">Manutenção</option>
             </select>
           </fieldset>

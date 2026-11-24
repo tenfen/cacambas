@@ -25,6 +25,10 @@ const ClienteController = {
     return API.request(`/cliente/${clienteId}/recolher`, { userId }, "PUT");
   },
 
+  getLocacoes: (clienteId) => {
+    return API.request(`/cliente/${clienteId}/locacoes`, {}, "GET");
+  },
+
   getRevenue: (userId) => {
     return API.request("/cliente/revenue", { userId }, "GET");
   },
