@@ -9,6 +9,7 @@ import {
   faUsers,
   faDumpster,
   faAddressBook,
+  faTruckRampBox,
   faUserCircle,
 } from "@fortawesome/free-solid-svg-icons"
 import AuthContext from "contexts/AuthContext"
@@ -23,6 +24,7 @@ const ADMIN_MENU_ITEMS = [
 
 const USER_MENU_ITEMS = [
   { path: "/", icon: faChartLine, label: "Dashboard" },
+  { path: "/alugueis", icon: faTruckRampBox, label: "Aluguéis" },
   { path: "/cacambas", icon: faDumpster, label: "Caçambas" },
   { path: "/clientes", icon: faAddressBook, label: "Clientes" },
   { path: "/perfil", icon: faUserCircle, label: "Meu Perfil" },
@@ -37,6 +39,7 @@ function getMobilePageTitle(pathname) {
   if (pathname === "/clientes/novo") return "Novo Cliente"
   if (pathname.startsWith("/clientes/editar/")) return "Editar Cliente"
   if (pathname.startsWith("/clientes")) return "Clientes"
+  if (pathname.startsWith("/alugueis")) return "Aluguéis"
   if (pathname === "/perfil") return "Meu Perfil"
   return "Cacambix"
 }

@@ -12,6 +12,7 @@ import UserManagement from "./pages/users/UserManagement"
 import DashboardUser from "./pages/dashboardUser/DashboardUser"
 import CacambaList from "./pages/cacambas/CacambaList"
 import CacambaForm from "./pages/cacambas/CacambaForm"
+import Alugueis from "./pages/alugueis/Alugueis"
 import ClienteList from "./pages/clientes/ClienteList"
 import ClienteForm from "./pages/clientes/ClienteForm"
 import PerfilUsuario from "./pages/perfil/PerfilUsuario"
@@ -30,6 +31,8 @@ export function Router() {
             <Route path="/cacambas" element={<CacambaList />} />
             <Route path="/cacambas/novo" element={<CacambaForm />} />
             <Route path="/cacambas/editar/:id" element={<CacambaForm />} />
+
+            <Route path="/alugueis" element={<Alugueis />} />
 
             <Route path="/clientes" element={<ClienteList />} />
             <Route path="/clientes/novo" element={<ClienteForm />} />

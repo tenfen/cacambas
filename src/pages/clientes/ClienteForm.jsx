@@ -2,37 +2,25 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAlert } from "react-alert";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAddressBook, faArrowLeft, faSave, faMapMarkerAlt, faDumpster, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faAddressBook, faArrowLeft, faSave, faMapMarkerAlt, faDumpster } from "@fortawesome/free-solid-svg-icons";
 
 import Button from "components/button/Button";
 import { Input } from "components/input/Input";
 
 import { formatDia, formatMomento } from "helpers/date-utils";
-import ConfirmModal from "modals/Confirm/ConfirmModal";
+import { nomeDaCacamba } from "helpers/locacao-utils";
 
 import ClienteController from "../../controllers/ClienteController";
-import CacambaController from "../../controllers/CacambaController";
 import AuthContext from "contexts/AuthContext";
 import LoadingContext from "../../contexts/LoadingContext";
 
 import "./ClienteForm.scss";
-
-function toDateInputValue(date) {
-  if (!date) return "";
-  return new Date(date).toISOString().slice(0, 10);
-}
 
 const LOCACAO_STATUS = {
   aberta: "Em andamento",
   concluida: "Concluída",
   cancelada: "Cancelada",
 };
-
-let proximaChave = 1;
-
-function novaLinha() {
-  return { chave: `nova-${proximaChave++}`, bucketId: "", dataEntrada: "", dataPrevista: "" };
-}
 
 const initialState = {
   clienteNome: "",
@@ -62,17 +50,8 @@ export default function ClienteForm() {
   const [formData, setFormData] = useState(initialState);
   const [coordenadas, setCoordenadas] = useState({ latitude: null, longitude: null });
   const [locacoes, setLocacoes] = useState([]);
-  // Aluguéis em andamento (datas editáveis) e linhas novas do formulário.
-  const [emAndamento, setEmAndamento] = useState([]);
-  const [novas, setNovas] = useState(isEdit ? [] : [novaLinha()]);
-  const [confirmacao, setConfirmacao] = useState(null);
-  const [cacambasDisponiveis, setCacambasDisponiveis] = useState([]);
-
-  const userId = user?.userLogged?.userId;
 
   useEffect(() => {
-    loadCacambasDisponiveis();
-
     if (isEdit) {
       loadCliente();
       loadLocacoes();
@@ -80,42 +59,10 @@ export default function ClienteForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const loadCacambasDisponiveis = async () => {
-    if (!userId) return;
-
-    try {
-      const response = await CacambaController.getAll(userId);
-
-      if (response.status === 200) {
-        setCacambasDisponiveis(
-          (response.content || []).filter((b) => b.bucketStatus === "disponivel")
-        );
-      }
-    } catch (error) {
-      console.error("Erro ao carregar caçambas disponíveis:", error);
-    }
-  };
-
   const loadLocacoes = async () => {
     const response = await ClienteController.getLocacoes(id);
     if (response.status === 200) {
-      const lista = response.content || [];
-      setLocacoes(lista);
-
-      // Mantém datas já digitadas e ainda não salvas.
-      setEmAndamento((atuais) =>
-        lista
-          .filter((l) => l.status === "aberta")
-          .map(
-            (l) =>
-              atuais.find((a) => a._id === l._id) || {
-                _id: l._id,
-                nome: `${l.bucketName || "Caçamba"}${l.bucketNumber ? ` (${l.bucketNumber})` : ""}`,
-                dataEntrada: toDateInputValue(l.dataEntrada),
-                dataPrevista: toDateInputValue(l.dataPrevista),
-              }
-          )
-      );
+      setLocacoes(response.content || []);
     }
   };
 
@@ -159,41 +106,6 @@ export default function ClienteForm() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const alterarAndamento = (_id, field, value) => {
-    setEmAndamento((lista) => lista.map((l) => (l._id === _id ? { ...l, [field]: value } : l)));
-  };
-
-  const alterarNova = (chave, field, value) => {
-    setNovas((lista) => lista.map((l) => (l.chave === chave ? { ...l, [field]: value } : l)));
-  };
-
-  const confirmarAcao = async () => {
-    const { acao, locacao } = confirmacao;
-    setConfirmacao(null);
-    setLoading(true);
-
-    try {
-      const response =
-        acao === "recolher"
-          ? await ClienteController.recolherLocacao(id, locacao._id)
-          : await ClienteController.cancelarLocacao(id, locacao._id);
-
-      if (response.status === 200) {
-        alert.success(acao === "recolher" ? "Caçamba recolhida!" : "Aluguel cancelado.");
-
-        if (response.cliente) {
-          handleChange("clienteActive", response.cliente.clienteActive);
-        }
-      } else {
-        alert.error(response.message || "Erro ao atualizar o aluguel");
-      }
-
-      await Promise.all([loadLocacoes(), loadCacambasDisponiveis()]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -202,30 +114,10 @@ export default function ClienteForm() {
       return;
     }
 
-    // Linha com data e sem caçamba é esquecimento; toda vazia é ignorada.
-    if (novas.some((l) => !l.bucketId && (l.dataEntrada || l.dataPrevista))) {
-      alert.error("Selecione a caçamba do novo aluguel");
-      return;
-    }
-
     setLoading(true);
     try {
       const dataToSend = {
         ...formData,
-        locacoes: [
-          ...emAndamento.map(({ _id, dataEntrada, dataPrevista }) => ({
-            _id,
-            dataEntrada: dataEntrada || null,
-            dataPrevista: dataPrevista || null,
-          })),
-          ...novas
-            .filter((l) => l.bucketId)
-            .map(({ bucketId, dataEntrada, dataPrevista }) => ({
-              bucketId: Number(bucketId),
-              dataEntrada: dataEntrada || null,
-              dataPrevista: dataPrevista || null,
-            })),
-        ],
         userId: user?.userLogged?.userId,
       };
 
@@ -235,7 +127,12 @@ export default function ClienteForm() {
 
       if (response.status === 200) {
         alert.success(`Cliente ${isEdit ? "atualizado" : "criado"} com sucesso!`);
-        navigate("/clientes");
+        // Cadastro novo segue direto para o aluguel.
+        navigate(
+          isEdit || !response.cliente?.clienteId
+            ? "/clientes"
+            : `/alugueis?cliente=${response.cliente.clienteId}`
+        );
       } else {
         alert.error(response.message || `Erro ao ${isEdit ? "atualizar" : "criar"} cliente`);
       }
@@ -285,6 +182,54 @@ export default function ClienteForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="form-content">
+        {isEdit && (
+          <div className="form-card">
+            <div className="locacao-topo">
+              <div className="card-title">Aluguéis deste cliente</div>
+              <Button type="button" onClick={() => navigate(`/alugueis?cliente=${id}`)}>
+                <FontAwesomeIcon icon={faDumpster} /> Alugar caçamba
+              </Button>
+            </div>
+
+            {locacoes.length === 0 && <p className="location-hint">Nenhum aluguel ainda.</p>}
+
+            {locacoes.length > 0 && (
+              <div className="locacoes-wrapper">
+                <table className="locacoes-table">
+                  <thead>
+                    <tr>
+                      <th>Caçamba</th>
+                      <th>Entrada</th>
+                      <th>Retirada</th>
+                      <th>Valor</th>
+                      <th>Situação</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {locacoes.map((locacao) => (
+                      <tr key={locacao._id}>
+                        <td>{nomeDaCacamba(locacao)}</td>
+                        <td>{formatDia(locacao.dataEntrada)}</td>
+                        <td>
+                          {locacao.status === "concluida"
+                            ? formatMomento(locacao.dataRecolhimento)
+                            : formatDia(locacao.dataPrevista)}
+                        </td>
+                        <td>
+                          {locacao.valor != null
+                            ? `R$ ${Number(locacao.valor).toFixed(2).replace(".", ",")}`
+                            : "-"}
+                        </td>
+                        <td>{LOCACAO_STATUS[locacao.status] || "-"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="form-card">
           <div className="card-title">Dados do Cliente</div>
 
@@ -419,153 +364,6 @@ export default function ClienteForm() {
         </div>
 
         <div className="form-card">
-          <div className="card-title">
-            <FontAwesomeIcon icon={faDumpster} /> Caçambas com este cliente
-          </div>
-
-          {emAndamento.map((locacao) => (
-            <div className="locacao-linha" key={locacao._id}>
-              <div className="locacao-topo">
-                <strong>{locacao.nome}</strong>
-                <div className="locacao-acoes">
-                  <button
-                    type="button"
-                    className="locacao-btn locacao-btn-recolher"
-                    onClick={() => setConfirmacao({ acao: "recolher", locacao })}
-                  >
-                    Recolhida
-                  </button>
-                  <button
-                    type="button"
-                    className="locacao-btn"
-                    onClick={() => setConfirmacao({ acao: "cancelar", locacao })}
-                  >
-                    Cancelar aluguel
-                  </button>
-                </div>
-              </div>
-
-              <div className="form-row">
-                <Input
-                  title="Data de entrada"
-                  type="date"
-                  value={locacao.dataEntrada}
-                  onChange={(e) => alterarAndamento(locacao._id, "dataEntrada", e.target.value)}
-                />
-                <Input
-                  title="Retirada prevista"
-                  type="date"
-                  value={locacao.dataPrevista}
-                  onChange={(e) => alterarAndamento(locacao._id, "dataPrevista", e.target.value)}
-                />
-              </div>
-            </div>
-          ))}
-
-          {novas.map((linha) => (
-            <div className="locacao-linha" key={linha.chave}>
-              <fieldset className="input-standard">
-                <label htmlFor={linha.chave}>Nova caçamba:</label>
-                <select
-                  id={linha.chave}
-                  value={linha.bucketId}
-                  onChange={(e) => alterarNova(linha.chave, "bucketId", e.target.value)}
-                >
-                  <option value="">Nenhuma</option>
-                  {cacambasDisponiveis
-                    .filter(
-                      (b) =>
-                        !novas.some(
-                          (l) => l.chave !== linha.chave && l.bucketId === String(b.bucketId)
-                        )
-                    )
-                    .map((cacamba) => (
-                      <option key={cacamba.bucketId} value={cacamba.bucketId}>
-                        {cacamba.bucketName}
-                        {cacamba.bucketNumber ? ` (${cacamba.bucketNumber})` : ""}
-                      </option>
-                    ))}
-                </select>
-                <span className="field-hint">Só aparecem as caçambas disponíveis.</span>
-              </fieldset>
-
-              <div className="form-row">
-                <Input
-                  title="Data de entrada"
-                  type="date"
-                  value={linha.dataEntrada}
-                  onChange={(e) => alterarNova(linha.chave, "dataEntrada", e.target.value)}
-                />
-                <Input
-                  title="Retirada prevista"
-                  type="date"
-                  value={linha.dataPrevista}
-                  onChange={(e) => alterarNova(linha.chave, "dataPrevista", e.target.value)}
-                />
-              </div>
-
-              <button
-                type="button"
-                className="locacao-btn"
-                onClick={() => setNovas((lista) => lista.filter((l) => l.chave !== linha.chave))}
-              >
-                Remover linha
-              </button>
-            </div>
-          ))}
-
-          <button
-            type="button"
-            className="locacao-btn locacao-btn-adicionar"
-            onClick={() => setNovas((lista) => [...lista, novaLinha()])}
-          >
-            <FontAwesomeIcon icon={faPlus} /> Adicionar caçamba
-          </button>
-        </div>
-
-        {locacoes.length > 0 && (
-          <div className="form-card">
-            <div className="card-title">Aluguéis deste cliente</div>
-
-            <div className="locacoes-wrapper">
-              <table className="locacoes-table">
-                <thead>
-                  <tr>
-                    <th>Caçamba</th>
-                    <th>Entrada</th>
-                    <th>Retirada</th>
-                    <th>Valor</th>
-                    <th>Situação</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {locacoes.map((locacao) => (
-                    <tr key={locacao._id}>
-                      <td>
-                        {locacao.bucketName || "-"}
-                        {locacao.bucketNumber ? ` (${locacao.bucketNumber})` : ""}
-                      </td>
-                      <td>{formatDia(locacao.dataEntrada)}</td>
-                      <td>
-                        {locacao.status === "concluida"
-                          ? formatMomento(locacao.dataRecolhimento)
-                          : formatDia(locacao.dataPrevista)}
-                      </td>
-                      <td>
-                        {locacao.valor != null
-                          ? `R$ ${Number(locacao.valor).toFixed(2).replace(".", ",")}`
-                          : "-"}
-                      </td>
-                      <td>{LOCACAO_STATUS[locacao.status] || "-"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        <div className="form-card">
           <div className="card-title">Observações</div>
           <Input
             type="text"
@@ -579,24 +377,10 @@ export default function ClienteForm() {
             Cancelar
           </Button>
           <Button type="submit">
-            <FontAwesomeIcon icon={faSave} /> {isEdit ? "Atualizar" : "Salvar"} Cliente
+            <FontAwesomeIcon icon={faSave} /> {isEdit ? "Atualizar cliente" : "Salvar e alugar caçamba"}
           </Button>
         </div>
       </form>
-
-      <ConfirmModal
-        isOpen={!!confirmacao}
-        variant={confirmacao?.acao === "recolher" ? "confirm" : undefined}
-        confirmLabel="Confirmar"
-        title={confirmacao?.acao === "recolher" ? "Marcar como recolhida" : "Cancelar aluguel"}
-        content={
-          confirmacao?.acao === "recolher"
-            ? `Confirma que "${confirmacao?.locacao.nome}" já foi recolhida? O valor entra na receita.`
-            : `Cancelar o aluguel de "${confirmacao?.locacao.nome}"? Ele não entra na receita.`
-        }
-        onConfirm={confirmarAcao}
-        onCancel={() => setConfirmacao(null)}
-      />
     </section>
   );
 }

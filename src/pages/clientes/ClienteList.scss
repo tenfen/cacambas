@@ -157,6 +157,17 @@
                 transition: all 0.2s;
                 font-size: 0.9rem;
 
+                &.action-alugar {
+                  background: #e4e1f7;
+                  color: #342b78;
+
+                  &:hover {
+                    background: #342b78;
+                    color: white;
+                    transform: translateY(-2px);
+                  }
+                }
+
                 &.action-route {
                   background: #d1e7ff;
                   color: #0b5ed7;

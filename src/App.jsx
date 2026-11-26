@@ -55,7 +55,7 @@ function podeEntrarNoPainel(papel) {
 
 const options = {
   position: positions.TOP_CENTER,
-  timeout: 1000,
+  timeout: 4000,
   offset: "60px",
   transition: transitions.SCALE,
   containerStyle: {

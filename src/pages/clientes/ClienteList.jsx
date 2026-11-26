@@ -2,12 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAlert } from "react-alert";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAddressBook, faEdit, faTrash, faRoute, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import { faAddressBook, faEdit, faTrash, faRoute, faCheckCircle, faDumpster } from "@fortawesome/free-solid-svg-icons";
 
 import Button from "components/button/Button";
 import Search from "components/search/Search";
 import ConfirmModal from "modals/Confirm/ConfirmModal";
 
+import { nomeDaCacamba, rotaUrl } from "helpers/locacao-utils";
 import { formatDia, formatMomento } from "helpers/date-utils";
 import ClienteController from "../../controllers/ClienteController";
 import AuthContext from "contexts/AuthContext";
@@ -103,29 +104,6 @@ export default function ClienteList() {
       (a, b) =>
         new Date(a.dataPrevista || "9999-12-31") - new Date(b.dataPrevista || "9999-12-31")
     );
-
-  const nomeDaCacamba = (locacao) =>
-    `${locacao.bucketName || "Caçamba"}${locacao.bucketNumber ? ` (${locacao.bucketNumber})` : ""}`;
-
-  const rotaUrl = (cliente) => {
-    if (cliente.clienteLatitude && cliente.clienteLongitude) {
-      return `https://www.google.com/maps/dir/?api=1&destination=${cliente.clienteLatitude},${cliente.clienteLongitude}`;
-    }
-
-    const endereco = [
-      cliente.clienteAddressName,
-      cliente.clienteAddressNumber,
-      cliente.clienteAddressNeighborhood,
-      cliente.clienteAddressCity,
-      cliente.clienteAddressState,
-    ]
-      .filter(Boolean)
-      .join(", ");
-
-    if (!endereco) return null;
-
-    return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(endereco)}`;
-  };
 
   const filteredClientes = clientes
     .filter((c) =>
@@ -235,6 +213,13 @@ export default function ClienteList() {
                   </td>
                   <td className="center-text">
                     <div className="actions">
+                      <button
+                        className="action-btn action-alugar"
+                        onClick={() => navigate(`/alugueis?cliente=${cliente.clienteId}`)}
+                        title="Alugar caçamba"
+                      >
+                        <FontAwesomeIcon icon={faDumpster} />
+                      </button>
                       {rotaUrl(cliente) && (
                         <a
                           className="action-btn action-route"
